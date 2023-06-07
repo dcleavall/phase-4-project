@@ -1,5 +1,4 @@
-# Standard library imports
-#main function is entry point handling all configurations
+
 
 # Remote library imports
 from flask import Flask
@@ -30,3 +29,6 @@ api = Api(app)
 
 # Instantiate CORS
 CORS(app)
+
+
+

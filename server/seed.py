@@ -5,25 +5,37 @@ from random import randint, choice as rc
 
 # Remote library imports
 from faker import Faker
+from flask_migrate import Migrate
 
-# Local imports
-from app import app
-from models import db
-
-def create_user():
-    fake = Faker()
-    user = User(
-        name=fake.name(),
-        age=randint(18, 99),
-        email=fake.email(),
-        password=fake.password()
-    )
-    db.session.add(user)
-    db.session.commit()
-
+from config import app, db
+from models import User
 
 if __name__ == '__main__':
-    fake = Faker()
+    faker = Faker()
+
     with app.app_context():
-        print("Starting seed...")
-        # Seed code goes here!
+        print('Seeding...')
+        db.create_all()  # Create the database tables if they don't exist
+
+        db.session.query(User).delete()
+
+        Users = []
+
+        for i in range(10):
+            user_data = {
+                'username': faker.user_name(),
+                'email': faker.email(),
+                'password': faker.password(),
+                'first_name': faker.first_name(),
+                'last_name': faker.last_name(),
+            }
+            user = User(**user_data)
+            Users.append(user)
+
+        db.session.add_all(Users)
+        db.session.commit()
+
+
+
+
+

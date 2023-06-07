@@ -1,9 +1,11 @@
-#main function- classes instantiating database structure info, handles validation,  and connects to the database
+
 from flask_sqlalchemy import SQLAlchemy
+
 from sqlalchemy import MetaData
-from sqlalchemy.orm import validates
-from sqlalchemy.ext.associationproxy import association_proxy
+
 from sqlalchemy_serializer import SerializerMixin
+
+from config import db
 
 convention = {
     "ix": "ix_%(column_0_label)s",
@@ -15,16 +17,20 @@ convention = {
 
 metadata = MetaData(naming_convention=convention)
 
-db = SQLAlchemy(metadata=metadata)
+
+
 
 class User(db.Model, SerializerMixin):
     __tablename__ = 'users'
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String, nullable=False)
-    age = db.Column(db.Integer, nullable=False)
+    username = db.Column(db.String, nullable=False, unique=True)
     email = db.Column(db.String, nullable=False, unique=True)
     password = db.Column(db.String, nullable=False)
+    first_name = db.Column(db.String, nullable=False)
+    last_name = db.Column(db.String, nullable=False)
+
+    
 
     def __repr__(self):
-        return f'<User {self.name}>'
+        return f"<User {self.username}>"
