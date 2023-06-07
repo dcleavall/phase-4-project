@@ -25,7 +25,7 @@ if __name__ == '__main__':
             user_data = {
                 'username': faker.user_name(),
                 'email': faker.email(),
-                'password': faker.password(),
+                'password_hash': faker.password(),
                 'first_name': faker.first_name(),
                 'last_name': faker.last_name(),
             }

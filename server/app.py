@@ -5,32 +5,35 @@ from flask_cors import CORS
 from config import db, app, api
 from models import User
 
+
 @app.route('/')
 
 def index():
     return 'Hello, world!'
 
 class User(Resource):
-    def post(self):
-        form_json = request.get_json()
-        new_user = User(
-            name=form_json['name'],
-            email=form_json['email'],
-            password=form_json['password'],
-            first_name=form_json['first_name'],
-            last_name=form_json['last_name']
-        )
-        db.session.add(new_user)
-        db.session.commit()
-        session['user_id'] = new_user.id
-        response = make_response(
-            new_user.to_dict(),
-            201
-        )
-        return response
-
+     pass
 class Signup(Resource):
-    pass
+    def post(self):
+         form_json = request.get_json()
+         new_user = User(
+         name=form_json['name'],
+         email=form_json['email'],
+         _password_hash=form_json['password'],
+         first_name=form_json['first_name'],
+         last_name=form_json['last_name']
+         )
+         new_user.password_hash = form_json['password']
+         db.session.add(new_user)
+         db.session.commit()
+
+         response = make_response(
+                 new_user.to_dict(),
+                 201
+             )
+         return response
+
+
 
 class Login(Resource):
     def post(self):
