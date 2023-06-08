@@ -11,17 +11,26 @@ from models import User
 def index():
     return 'Hello, world!'
 
-class User(Resource):
-     pass
+class Users(Resource):
+     def get(self):
+         users = User.query.all()
+         response = make_response(
+             jsonify(
+                 [user.to_dict() for user in users]
+             ),
+             200
+         )
+         return response
+
 class Signup(Resource):
     def post(self):
          form_json = request.get_json()
          new_user = User(
-         name=form_json['name'],
+         username=form_json['username'],
          email=form_json['email'],
          _password_hash=form_json['password'],
-         first_name=form_json['first_name'],
-         last_name=form_json['last_name']
+         first_name=form_json['firstName'],
+         last_name=form_json['lastName']
          )
          new_user.password_hash = form_json['password']
          db.session.add(new_user)
@@ -63,7 +72,7 @@ class Logout(Resource):
         response = make_response('', 204)
         return response
 
-api.add_resource(User, '/users')
+api.add_resource(Users, '/users')
 api.add_resource(Signup, '/signup')
 api.add_resource(Login, '/login')
 api.add_resource(AuthorizationSession, '/authorized')
