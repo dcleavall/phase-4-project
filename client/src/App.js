@@ -5,27 +5,33 @@ import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import Signup from "./components/Signup";
 import Login from "./components/Login";
 import Home from "./components/Home";
- 
+
+
 
 function App() {
   const [loggedIn, setLoggedIn] = useState(false);
 
-  const fetchUser = async () => {
-    try {
-      const response = await fetch("/authorized");
-      if (response.ok) {
-        const data = await response.json();
-        setLoggedIn(data);
-      } else if (response.status === 401) {
-        setLoggedIn(false);  // User is not logged in
-      } else {
-        console.log("Unexpected response:", response);
+  const fetchUser = () => {
+    fetch("/authorized")
+      .then((response) => {
+        if (response.ok) {
+          return response.json();
+        } else if (response.status === 401) {
+          setLoggedIn(false); // User is not logged in
+        } else {
+          console.log("Unexpected response:", response);
+          setLoggedIn(false);
+        }
+      })
+      .then((data) => {
+        if (data) {
+          setLoggedIn(data);
+        }
+      })
+      .catch((error) => {
+        console.error("Error:", error);
         setLoggedIn(false);
-      }
-    } catch (error) {
-      console.error("Error:", error);
-      setLoggedIn(false);
-    }
+      });
   };
   
   useEffect(() => {
@@ -39,10 +45,19 @@ function App() {
     setLoggedIn(true);
   };
 
-  // Function to handle user logout
-  const handleLogout = () => {
-  
-    setLoggedIn(false);
+   // Function to handle user logout
+   const handleLogout = () => {
+    fetch("/logout", { method: "DELETE" })
+      .then((response) => {
+        if (response.ok) {
+          setLoggedIn(false); // Logout successful, set 'loggedIn' state to false
+        } else {
+          console.log("Logout failed:", response);
+        }
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
   };
 
   return (
@@ -78,9 +93,11 @@ function App() {
           <Route path="/login">
             <Login onLogin={handleLogin} />
           </Route>
-          <Route path="/">
-            <Home />
-          </Route>
+          {loggedIn && (
+            <Route path="/">
+              <Home />
+            </Route>
+          )}
         </Switch>
       </div>
     </Router>
@@ -88,3 +105,4 @@ function App() {
 }
 
 export default App;
+
