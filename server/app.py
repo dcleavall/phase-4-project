@@ -24,47 +24,61 @@ class Users(Resource):
 
 class Signup(Resource):
     def post(self):
-         form_json = request.get_json()
-         new_user = User(
-         username=form_json['username'],
-         email=form_json['email'],
-         _password_hash=form_json['password'],
-         first_name=form_json['firstName'],
-         last_name=form_json['lastName']
-         )
-         new_user.password_hash = form_json['password']
-         db.session.add(new_user)
-         db.session.commit()
+        form_json = request.get_json()
+        email = form_json['email']
+        
+        # Check if the email already exists
+        existing_user = User.query.filter_by(email=email).first()
+        if existing_user:
+            abort(409, "Email already exists")
+        
+        # Create a new user instance
+        new_user = User(
+            username=form_json['username'],
+            email=form_json['email'],
+            password_hash=form_json['password'],
+            first_name=form_json['firstName'],
+            last_name=form_json['lastName']
+        )
 
-         response = make_response(
-                 new_user.to_dict(),
-                 201
-             )
-         return response
+        # Add the new user to the database
+        try:
+            db.session.add(new_user)
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
+            abort(500, f"Failed to create user: {str(e)}")
+
+        response = make_response(new_user.to_dict(), 201)
+        return response
 
 
 
 class Login(Resource):
     def post(self):
-        user = User.query.filter_by(name=request.get_json()['name']).first()
-        session['user_id'] = user.id
-        response = make_response(
-            user.to_dict(),
-            200
-        )
-        return response
+        data = request.get_json()
+        username = data['username']
+        password = data['password']
 
-class AuthorizationSession(Resource):
-    def get(self):
-        user = User.query.filter_by(id=session['user_id']).first()
-        if user:
-            response = make_response(
-                user.to_dict(),
-                200
-            )
+        user = User.query.filter_by(username=username).first()
+        if user and user.authenticate(password):
+            session['user_id'] = user.id
+            response = make_response(user.to_dict(), 200)
             return response
         else:
             abort(401, "Unauthorized")
+
+class AuthorizationSession(Resource):
+    def get(self):
+        if 'user_id' in session:
+            user = User.query.filter_by(id=session['user_id']).first()
+            if user:
+                response = make_response(
+                    user.to_dict(),
+                    200
+                )
+                return response
+        abort(401, "Unauthorized")
 
 class Logout(Resource):
     def delete(self):

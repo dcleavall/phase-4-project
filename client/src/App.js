@@ -16,7 +16,10 @@ function App() {
       if (response.ok) {
         const data = await response.json();
         setLoggedIn(data);
+      } else if (response.status === 401) {
+        setLoggedIn(false);  // User is not logged in
       } else {
+        console.log("Unexpected response:", response);
         setLoggedIn(false);
       }
     } catch (error) {

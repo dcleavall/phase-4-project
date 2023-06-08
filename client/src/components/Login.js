@@ -1,16 +1,20 @@
 import React from "react";
 import { useFormik } from "formik";
+import * as Yup from "yup";
 
 function Login() {
-
+  
   const formik = useFormik({
     initialValues: {
-      email: "",
+      username: "",
       password: "",
     },
-
+    validationSchema: Yup.object({
+      username: Yup.string().required("Username is required"),
+      password: Yup.string().required("Password is required"),
+    }),
     onSubmit: (values) => {
-      // Send login data to the backend and handle the response
+
       fetch("/login", {
         method: "POST",
         headers: {
@@ -18,12 +22,21 @@ function Login() {
         },
         body: JSON.stringify(values),
       })
-        .then((response) => response.json())
+        .then((response) => {
+          if (response.status === 401) {
+            throw new Error("Invalid login");
+          } else if (response.ok) {
+            // Process the successful response
+          } else {
+            throw new Error("Login failed");
+          }
+        })
         .then((data) => {
-          // Handle the response from the backend
+          // Handle the successful response
           console.log(data);
         })
         .catch((error) => {
+          // Handle errors
           console.error("Error:", error);
         });
     },
@@ -32,13 +45,15 @@ function Login() {
   return (
     <div>
       <h1>Login</h1>
+      {formik.errors.username && <p>Error: {formik.errors.username}</p>}
+      {formik.errors.password && <p>Error: {formik.errors.password}</p>}
       <form onSubmit={formik.handleSubmit}>
         <div>
-          <label>Email</label>
+          <label>Username</label>
           <input
-            type="email"
-            name="email"
-            value={formik.values.email}
+            type="text"
+            name="username"
+            value={formik.values.username}
             onChange={formik.handleChange}
           />
         </div>

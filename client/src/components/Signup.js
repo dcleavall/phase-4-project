@@ -13,31 +13,36 @@ const SignupSchema = Yup.object().shape({
 });
 
 function Signup() {
-  const [user, setUser] = useState({});
+  const [user, setUser] = useState();
   const [error, setError] = useState(null);
 
-  const handleSubmit = async (values) => {
-    try {
-      const response = await fetch("/signup", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(values),
-      });
-  
-      if (response.ok) {
-        const data = await response.json();
+  const handleSubmit = (values) => {
+    fetch("/signup", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(values),
+    })
+      .then((response) => {
+        if (response.status === 409) {
+          throw new Error("Email already exists. Please choose a different email.");
+        } else if (response.ok) {
+          // Process the successful response
+        } else {
+          throw new Error("Sign up failed");
+        }
+      })
+      .then((data) => {
         setUser(data);
         setError(null);
-      } else {
-        throw new Error("Sign up failed");
-      }
-    } catch (error) {
-      setError(error.message);
-      console.error("Error:", error);
-    }
+      })
+      .catch((error) => {
+        setError(error.message);
+        console.error("Error:", error);
+      });
   };
+
 
   const formik = useFormik({
     initialValues: {
