@@ -88,7 +88,7 @@ class Logout(Resource):
         if 'user_id' in session:
             session.clear()  # Clear all session variables
             session['end_time'] = datetime.now().isoformat() 
-            return {"message": "Login successful"}
+            return {"message": "Logout successful"}
         else:
             abort(401, "Unauthorized")
 
