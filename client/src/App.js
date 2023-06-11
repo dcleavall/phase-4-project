@@ -70,21 +70,20 @@ function App() {
     fetch("/logout", {
       method: "DELETE",
       headers: {
-        Authorization: `Bearer ${sessionStorage.getItem("token")}`
-      }
+        "Content-Type": "application/json",
+      },
     })
       .then((response) => {
         if (response.ok) {
           return response.json(); // Parse the response as JSON
         } else {
-          console.log("Logout failed:", response);
+          throw new Error("Logout failed"); // Throw an error if the response is not ok
         }
       })
       .then((data) => {
         console.log(data.message); // Log the response message to the console
         console.log(data.user); // Log the user object
         setLoggedIn(false); // Logout successful, set 'loggedIn' state to false
-        sessionStorage.clear(); // Clear session storage
         history.push("/login?auth=true"); // Redirect to the login page with authorization parameter
       })
       .catch((error) => {

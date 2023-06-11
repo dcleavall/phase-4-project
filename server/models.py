@@ -1,14 +1,13 @@
 
 from flask_sqlalchemy import SQLAlchemy
 
+
 from sqlalchemy import MetaData
 
 from sqlalchemy_serializer import SerializerMixin
-
-from config import db, bcrypt
-
+from config import db
 from sqlalchemy.ext.hybrid import hybrid_property
-
+from flask_bcrypt import Bcrypt
 
 convention = {
     "ix": "ix_%(column_0_label)s",
@@ -20,8 +19,7 @@ convention = {
 
 metadata = MetaData(naming_convention=convention)
 
-
-
+bcrypt = Bcrypt()
 
 class User(db.Model, SerializerMixin):
     __tablename__ = 'users'
@@ -33,9 +31,9 @@ class User(db.Model, SerializerMixin):
     first_name = db.Column(db.String, nullable=False)
     last_name = db.Column(db.String, nullable=False)
 
-    serialize_rules = ("-_password_hash",)
+    serialize_only = ('username', 'email', 'first_name', 'last_name')
 
-    @hybrid_property
+    @property
     def password_hash(self):
         return self._password_hash
 
@@ -44,13 +42,17 @@ class User(db.Model, SerializerMixin):
         password_hash = bcrypt.generate_password_hash(password.encode('utf-8'))
         self._password_hash = password_hash.decode('utf-8')
 
-    # Authenticate method/ check passsword
-
     def authenticate(self, password):
         return bcrypt.check_password_hash(self.password_hash, password)
 
+    def to_dict(self):
+        return {
+            'username': self.username,
+            'email': self.email,
+            'first_name': self.first_name,
+            'last_name': self.last_name
+        }
 
-
-        
     def __repr__(self):
         return f"<User {self.username}>"
+

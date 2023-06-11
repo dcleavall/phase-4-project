@@ -6,37 +6,32 @@ from config import db, app, api
 from models import User
 from datetime import datetime
 import logging
+from sqlalchemy.orm import Session
 
 
 @app.route('/')
 
 def index():
-    return 'Hello, world!'
-
+    return "Hello, Guest!"
 
 class Users(Resource):
     def get(self):
         users = User.query.all()
         response = make_response(
-            jsonify(
-                [user.to_dict() for user in users]
-            ),
+            jsonify([user.to_dict() for user in users]),
             200
         )
         return response
-
 
 class Signup(Resource):
     def post(self):
         form_json = request.get_json()
         email = form_json['email']
 
-        # Check if the email already exists
         existing_user = User.query.filter_by(email=email).first()
         if existing_user:
             abort(409, "Email already exists")
 
-        # Create a new user instance
         new_user = User(
             username=form_json['username'],
             email=form_json['email'],
@@ -45,7 +40,6 @@ class Signup(Resource):
             last_name=form_json['lastName']
         )
 
-        # Add the new user to the database
         try:
             db.session.add(new_user)
             db.session.commit()
@@ -56,7 +50,6 @@ class Signup(Resource):
         response = make_response(new_user.to_dict(), 201)
         return response
 
-
 class Login(Resource):
     def post(self):
         data = request.get_json()
@@ -64,43 +57,46 @@ class Login(Resource):
         password = data['password']
 
         user = User.query.filter_by(username=username).first()
+
         if user and user.authenticate(password):
+            session.clear()
             session['user_id'] = user.id
             session['loggedIn'] = True
-            session['start_time'] = datetime.now().isoformat()  # Set session start timestamp
+            session['start_time'] = datetime.now().isoformat()
             return {
                 "message": "Login successful",
-                "user": user.to_dict()
+                "user_id": user.id
             }
         else:
             return {
                 "message": "Login failed"
             }, 401
 
-
 class AuthorizationSession(Resource):
     def get(self):
         if 'user_id' in session and session['loggedIn']:
-            user = User.query.filter_by(id=session['user_id']).first()
+            user_id = session['user_id']
+            user = User.query.get(user_id)
             if user:
                 return user.to_dict(), 200
         abort(401, "Unauthorized")
 
-
 class Logout(Resource):
     def delete(self):
-        if 'user_id' in session:
-            user = User.query.filter_by(id=session['user_id']).first()
+        if 'user_id' in session and session['loggedIn']:
+            user_id = session['user_id']
+            user = User.query.get(user_id)
+
             if user:
-                session['end_time'] = datetime.now().isoformat()
-                session.clear()  # Clear all session variables
+                if user.id == session['user_id']:
+                    session.clear()
+                    session['end_time'] = datetime.now().isoformat()
 
-                logging.info(f"User logged out: {user.username}")  # Log the user object
+                    logging.info(f"User logged out: {user.username}")
 
-                return {"message": "Logout successful", "user": user.to_dict()}
+                    return {"message": "Logout successful", "user": user.to_dict()}
 
         abort(401, "Unauthorized")
-
 
 api.add_resource(Users, '/users')
 api.add_resource(Signup, '/signup')
