@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 
 const SignupSchema = Yup.object().shape({
   username: Yup.string().required('Username is required'),
@@ -14,6 +14,7 @@ const SignupSchema = Yup.object().shape({
 function Signup({ loggedIn }) {
   const [user, setUser] = useState(null);
   const [error, setError] = useState(null);
+  const history = useHistory();
 
   const handleSubmit = (values) => {
     fetch('/signup', {
@@ -35,6 +36,7 @@ function Signup({ loggedIn }) {
       .then((data) => {
         setUser(data);
         setError(null);
+        history.push('/login'); // Redirect to the login page after successful signup
       })
       .catch((error) => {
         setUser(null);
@@ -120,6 +122,7 @@ function Signup({ loggedIn }) {
 }
 
 export default Signup;
+
 
 
 

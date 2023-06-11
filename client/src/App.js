@@ -1,6 +1,7 @@
 // App.js
 import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Switch, Route, Redirect, Link, useLocation } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 
 // Import components
 import Signup from "./components/Signup";
@@ -9,6 +10,7 @@ import Home from "./components/Home";
 import "./App.css";
 
 function App() {
+  const history = useHistory();
   const location = useLocation();
   const [loggedIn, setLoggedIn] = useState(false);
   
@@ -45,6 +47,7 @@ function App() {
       .then((response) => {
         if (response.ok) {
           setLoggedIn(false); // Logout successful, set 'loggedIn' state to false
+          history.push("/"); // Redirect to the desired page after logout
         } else {
           console.log("Logout failed:", response);
         }
