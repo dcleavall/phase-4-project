@@ -1,18 +1,15 @@
 from flask import Flask, make_response, jsonify, request, session, abort
-
 from flask_restful import Api, Resource
 from flask_cors import CORS
 from config import db, app, api
 from models import User
 from datetime import datetime
 import logging
-from sqlalchemy.orm import Session
 
-
+# Define route handlers
 @app.route('/')
-
 def index():
-    return "Hello, Guest!"
+    return "Hello World!"
 
 class Users(Resource):
     def get(self):
@@ -59,45 +56,53 @@ class Login(Resource):
         user = User.query.filter_by(username=username).first()
 
         if user and user.authenticate(password):
-            session.clear()
-            session['user_id'] = user.id
+            session.clear()  # Clear any existing session variables
+            session['user_id'] = user.id  # Storing the user ID in the session
             session['loggedIn'] = True
-            session['start_time'] = datetime.now().isoformat()
+            session['start_time'] = datetime.now().isoformat()  # Set session start timestamp
             return {
                 "message": "Login successful",
-                "user_id": user.id
+                "user": {
+                    "username": user.username  # Include the username in the response
+                    # Add any other user properties you want to include
+                }
             }
         else:
             return {
                 "message": "Login failed"
             }, 401
 
+
 class AuthorizationSession(Resource):
     def get(self):
         if 'user_id' in session and session['loggedIn']:
             user_id = session['user_id']
-            user = User.query.get(user_id)
+            user = User.query.filter_by(id=user_id).first()  # Alternative query
             if user:
                 return user.to_dict(), 200
         abort(401, "Unauthorized")
+
 
 class Logout(Resource):
     def delete(self):
         if 'user_id' in session and session['loggedIn']:
             user_id = session['user_id']
-            user = User.query.get(user_id)
+            user = User.query.filter_by(id=user_id).first()  # Alternative query
 
             if user:
+                # Check if the user being logged out matches the user stored in the session
                 if user.id == session['user_id']:
-                    session.clear()
+                    session.clear()  # Clear all session variables
                     session['end_time'] = datetime.now().isoformat()
 
-                    logging.info(f"User logged out: {user.username}")
+                    logging.info(f"User logged out: {user.username}")  # Log the user object
 
                     return {"message": "Logout successful", "user": user.to_dict()}
 
         abort(401, "Unauthorized")
 
+
+# Add resource routes
 api.add_resource(Users, '/users')
 api.add_resource(Signup, '/signup')
 api.add_resource(Login, '/login')
@@ -105,7 +110,9 @@ api.add_resource(AuthorizationSession, '/authorized')
 api.add_resource(Logout, '/logout')
 
 if __name__ == '__main__':
-    app.run(port=5555, debug=True)
+    app.run(port=5555, debug=True) 
+
+
 
 
 

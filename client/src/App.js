@@ -1,6 +1,6 @@
+// App.js
 import React, { useState, useEffect } from "react";
-import { BrowserRouter as Router, Switch, Route, Redirect, Link, useLocation } from "react-router-dom";
-import { useHistory } from "react-router-dom";
+import { BrowserRouter as Router, Switch, Route, Redirect, Link, useHistory, useLocation } from "react-router-dom";
 
 // Import components
 import Signup from "./components/Signup";
@@ -12,7 +12,11 @@ function App() {
   const history = useHistory();
   const location = useLocation();
   const [loggedIn, setLoggedIn] = useState(false);
-  
+
+  useEffect(() => {
+    fetchUser();
+  }, []);
+
   const fetchUser = () => {
     fetch("/authorized")
       .then((response) => {
@@ -24,7 +28,7 @@ function App() {
         }
       })
       .then((data) => {
-        setLoggedIn(data); // Update loggedIn state based on the response
+        setLoggedIn(true);
       })
       .catch((error) => {
         console.error("Error:", error);
@@ -32,39 +36,32 @@ function App() {
       });
   };
 
-  useEffect(() => {
-    fetchUser();
-  }, []);
-
-  const handleLogin = () => {
-    const username = 'username';
-    const password = 'password';
-  
+  const handleLogin = (username, password) => {
     fetch("/login", {
       method: "POST",
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({ username, password })
+      body: JSON.stringify({ username, password }),
     })
       .then((response) => {
-        if (response.ok) {
-          return response.json(); // Parse the response as JSON
+        if (response.status === 401) {
+          throw new Error("Invalid login");
+        } else if (response.ok) {
+          return response.json();
         } else {
-          throw new Error("Login failed"); // Throw an error if the response is not ok
+          throw new Error("Login failed");
         }
       })
       .then((data) => {
-        console.log(data.message); // Log the login success message
-        console.log(data.user); // Log the user object
-        setLoggedIn(true); // Set 'loggedIn' state to true
+        console.log(data);
+        setLoggedIn(true);
+        history.push("/");
       })
       .catch((error) => {
         console.error("Error:", error);
       });
   };
-  
-  
 
   const handleLogout = () => {
     fetch("/logout", {
@@ -75,16 +72,16 @@ function App() {
     })
       .then((response) => {
         if (response.ok) {
-          return response.json(); // Parse the response as JSON
+          return response.json();
         } else {
-          throw new Error("Logout failed"); // Throw an error if the response is not ok
+          throw new Error("Logout failed");
         }
       })
       .then((data) => {
-        console.log(data.message); // Log the response message to the console
-        console.log(data.user); // Log the user object
-        setLoggedIn(false); // Logout successful, set 'loggedIn' state to false
-        history.push("/login?auth=true"); // Redirect to the login page with authorization parameter
+        console.log(data.message);
+        console.log(data.user);
+        setLoggedIn(false);
+        history.push("/login?auth=true");
       })
       .catch((error) => {
         console.error("Error:", error);

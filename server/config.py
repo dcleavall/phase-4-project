@@ -8,6 +8,7 @@ from flask_restful import Api
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import MetaData
 from flask_bcrypt import Bcrypt
+from sqlalchemy.orm import Session
 # from os import environ
 # from dotenv import load_dotenv
 # import os   
@@ -29,6 +30,7 @@ metadata = MetaData(naming_convention={
 db = SQLAlchemy(metadata=metadata)
 migrate = Migrate(app, db)
 db.init_app(app)
+Session(app)
 
 # Instantiate BCrypt
 bcrypt = Bcrypt(app)

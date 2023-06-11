@@ -1,13 +1,8 @@
-
-// Login.js
 import React from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { useHistory } from "react-router-dom";
 
 function Login({ onLogin }) {
-  const history = useHistory();
-
   const formik = useFormik({
     initialValues: {
       username: "",
@@ -18,30 +13,7 @@ function Login({ onLogin }) {
       password: Yup.string().required("Password is required"),
     }),
     onSubmit: (values) => {
-      fetch("/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(values),
-      })
-        .then((response) => {
-          if (response.status === 401) {
-            throw new Error("Invalid login");
-          } else if (response.ok) {
-            return response.json();
-          } else {
-            throw new Error("Login failed");
-          }
-        })
-        .then((data) => {
-          console.log(data);
-          onLogin(); // Call the onLogin prop to update the loggedIn state in App.js
-          history.push("/"); // Redirect to the home page
-        })
-        .catch((error) => {
-          console.error("Error:", error);
-        });
+      onLogin(values.username, values.password);
     },
   });
 
@@ -76,5 +48,6 @@ function Login({ onLogin }) {
 }
 
 export default Login;
+
 
 
