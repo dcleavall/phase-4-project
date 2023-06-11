@@ -1,4 +1,3 @@
-// App.js
 import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Switch, Route, Redirect, Link, useLocation } from "react-router-dom";
 import { useHistory } from "react-router-dom";
@@ -14,7 +13,6 @@ function App() {
   const location = useLocation();
   const [loggedIn, setLoggedIn] = useState(false);
   
-
   const fetchUser = () => {
     fetch("/authorized")
       .then((response) => {
@@ -39,11 +37,42 @@ function App() {
   }, []);
 
   const handleLogin = () => {
-    setLoggedIn(true);
+    const username = 'username';
+    const password = 'password';
+  
+    fetch("/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ username, password })
+    })
+      .then((response) => {
+        if (response.ok) {
+          return response.json(); // Parse the response as JSON
+        } else {
+          throw new Error("Login failed"); // Throw an error if the response is not ok
+        }
+      })
+      .then((data) => {
+        console.log(data.message); // Log the login success message
+        console.log(data.user); // Log the user object
+        setLoggedIn(true); // Set 'loggedIn' state to true
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
   };
+  
+  
 
   const handleLogout = () => {
-    fetch("/logout", { method: "DELETE" })
+    fetch("/logout", {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${sessionStorage.getItem("token")}`
+      }
+    })
       .then((response) => {
         if (response.ok) {
           return response.json(); // Parse the response as JSON
@@ -55,13 +84,13 @@ function App() {
         console.log(data.message); // Log the response message to the console
         console.log(data.user); // Log the user object
         setLoggedIn(false); // Logout successful, set 'loggedIn' state to false
-        history.push("/"); // Redirect to the desired page after logout
+        sessionStorage.clear(); // Clear session storage
+        history.push("/login?auth=true"); // Redirect to the login page with authorization parameter
       })
       .catch((error) => {
         console.error("Error:", error);
       });
   };
-  
 
   return (
     <Router>
@@ -107,6 +136,7 @@ function App() {
 }
 
 export default App;
+
 
 
 
