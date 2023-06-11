@@ -5,6 +5,7 @@ from flask_cors import CORS
 from config import db, app, api
 from models import User
 from datetime import datetime
+import logging
 
 
 @app.route('/')
@@ -66,6 +67,9 @@ class Login(Resource):
             session['user_id'] = user.id
             session['loggedIn'] = True
             session['start_time'] = datetime.now().isoformat()  # Set session start timestamp
+
+            logging.info(f"User logged in: {user.username}")  # Log the user object
+            
             return {"message": "Login successful"}
         else:
             abort(401, "Unauthorized")
@@ -84,13 +88,18 @@ class AuthorizationSession(Resource):
         abort(401, "Unauthorized")
 
 class Logout(Resource):
-    def delete(self):
-        if 'user_id' in session:
-            session.clear()  # Clear all session variables
-            session['end_time'] = datetime.now().isoformat() 
-            return {"message": "Logout successful"}
-        else:
-            abort(401, "Unauthorized")
+  def delete(self):
+    if 'user_id' in session:
+      user = User.query.filter_by(id=session['user_id']).first()
+      if user:
+        session['end_time'] = datetime.now().isoformat()
+        session.clear()  # Clear all session variables
+
+        logging.info(f"User logged out: {user.username}")  # Log the user object
+
+        return {"message": "Logout successful", "user": user.to_dict()}
+    
+    abort(401, "Unauthorized")
 
 api.add_resource(Users, '/users')
 api.add_resource(Signup, '/signup')

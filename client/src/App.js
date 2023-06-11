@@ -46,16 +46,22 @@ function App() {
     fetch("/logout", { method: "DELETE" })
       .then((response) => {
         if (response.ok) {
-          setLoggedIn(false); // Logout successful, set 'loggedIn' state to false
-          history.push("/"); // Redirect to the desired page after logout
+          return response.json(); // Parse the response as JSON
         } else {
           console.log("Logout failed:", response);
         }
+      })
+      .then((data) => {
+        console.log(data.message); // Log the response message to the console
+        console.log(data.user); // Log the user object
+        setLoggedIn(false); // Logout successful, set 'loggedIn' state to false
+        history.push("/"); // Redirect to the desired page after logout
       })
       .catch((error) => {
         console.error("Error:", error);
       });
   };
+  
 
   return (
     <Router>
