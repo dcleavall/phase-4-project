@@ -1,9 +1,13 @@
+
+// Login.js
 import React from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
+import { useHistory } from "react-router-dom";
 
-function Login() {
-  
+function Login({ onLogin }) {
+  const history = useHistory();
+
   const formik = useFormik({
     initialValues: {
       username: "",
@@ -14,7 +18,6 @@ function Login() {
       password: Yup.string().required("Password is required"),
     }),
     onSubmit: (values) => {
-
       fetch("/login", {
         method: "POST",
         headers: {
@@ -26,29 +29,29 @@ function Login() {
           if (response.status === 401) {
             throw new Error("Invalid login");
           } else if (response.ok) {
-            // Process the successful response
+            return response.json();
           } else {
             throw new Error("Login failed");
           }
         })
         .then((data) => {
-          // Handle the successful response
           console.log(data);
+          onLogin(); // Call the onLogin prop to update the loggedIn state in App.js
+          history.push("/"); // Redirect to the home page
         })
         .catch((error) => {
-          // Handle errors
           console.error("Error:", error);
         });
     },
   });
 
   return (
-    <div>
-      <h1>Login</h1>
+    <div className="container">
+      <h1 className="form-heading">Login</h1>
       {formik.errors.username && <p>Error: {formik.errors.username}</p>}
       {formik.errors.password && <p>Error: {formik.errors.password}</p>}
-      <form onSubmit={formik.handleSubmit}>
-        <div>
+      <form className="form" onSubmit={formik.handleSubmit}>
+        <div className="form-group">
           <label>Username</label>
           <input
             type="text"
@@ -57,7 +60,7 @@ function Login() {
             onChange={formik.handleChange}
           />
         </div>
-        <div>
+        <div className="form-group">
           <label>Password</label>
           <input
             type="password"
@@ -73,3 +76,5 @@ function Login() {
 }
 
 export default Login;
+
+

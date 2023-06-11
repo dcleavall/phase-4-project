@@ -1,36 +1,35 @@
-import React from "react";
-import { useState } from "react";
-import { useFormik } from "formik";
-import * as Yup from "yup";
-
+import React, { useState } from 'react';
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
+import { Link } from 'react-router-dom';
 
 const SignupSchema = Yup.object().shape({
-  username: Yup.string().required("Username is required"),
-  email: Yup.string().email("Invalid email").required("Email is required"),
-  password: Yup.string().required("Password is required"),
-  firstName: Yup.string().required("First name is required"),
-  lastName: Yup.string().required("Last name is required"),
+  username: Yup.string().required('Username is required'),
+  email: Yup.string().email('Invalid email').required('Email is required'),
+  password: Yup.string().required('Password is required'),
+  firstName: Yup.string().required('First name is required'),
+  lastName: Yup.string().required('Last name is required'),
 });
 
-function Signup() {
-  const [user, setUser] = useState();
+function Signup({ loggedIn }) {
+  const [user, setUser] = useState(null);
   const [error, setError] = useState(null);
 
   const handleSubmit = (values) => {
-    fetch("/signup", {
-      method: "POST",
+    fetch('/signup', {
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify(values),
     })
       .then((response) => {
         if (response.status === 409) {
-          throw new Error("Email already exists. Please choose a different email.");
+          throw new Error('Email already exists. Please choose a different email.');
         } else if (response.ok) {
-          // Process the successful response
+          return response.json();
         } else {
-          throw new Error("Sign up failed");
+          throw new Error('Sign up failed');
         }
       })
       .then((data) => {
@@ -38,79 +37,97 @@ function Signup() {
         setError(null);
       })
       .catch((error) => {
+        setUser(null);
         setError(error.message);
-        console.error("Error:", error);
+        console.error('Error:', error);
       });
   };
 
-
   const formik = useFormik({
     initialValues: {
-      username: "",
-      email: "",
-      password: "",
-      firstName: "",
-      lastName: "",
+      username: '',
+      email: '',
+      password: '',
+      firstName: '',
+      lastName: '',
     },
     validationSchema: SignupSchema,
     onSubmit: handleSubmit,
   });
 
   return (
-    <div>
+    <div className="container">
       <h1>Signup</h1>
-      {error && <p>Error: {error}</p>}
+      {error && <p className="error">Error: {error}</p>}
       {user && <p>User: {JSON.stringify(user)}</p>}
       <form onSubmit={formik.handleSubmit}>
-        <div>
-            <label>Username</label>
-            <input 
-                type="text"
-                name="username"
-                value={formik.values.username}
-                onChange={formik.handleChange}
-            />
+        <div className="form-group">
+          <label>Username</label>
+          <input
+            type="text"
+            name="username"
+            value={formik.values.username}
+            onChange={formik.handleChange}
+          />
         </div>
-        <div>
-            <label>Email</label>
-            <input
-                type="email"
-                name="email"
-                value={formik.values.email}
-                onChange={formik.handleChange}
-            />
+        <div className="form-group">
+          <label>Email</label>
+          <input
+            type="email"
+            name="email"
+            value={formik.values.email}
+            onChange={formik.handleChange}
+          />
         </div>
-        <div>
-            <label>Password</label>
-            <input
-                type="password"
-                name="password"
-                value={formik.values.password}
-                onChange={formik.handleChange}
-            />
+        <div className="form-group">
+          <label>Password</label>
+          <input
+            type="password"
+            name="password"
+            value={formik.values.password}
+            onChange={formik.handleChange}
+          />
         </div>
-        <div>
-            <label>First Name</label>
-            <input
-                type="text"
-                name="firstName"
-                value={formik.values.firstName}
-                onChange={formik.handleChange}
-            />
+        <div className="form-group">
+          <label>First Name</label>
+          <input
+            type="text"
+            name="firstName"
+            value={formik.values.firstName}
+            onChange={formik.handleChange}
+          />
         </div>
-        <div>
-            <label>Last Name</label>
-            <input
-                type="text"
-                name="lastName"
-                value={formik.values.lastName}
-                onChange={formik.handleChange}
-            />
+        <div className="form-group">
+          <label>Last Name</label>
+          <input
+            type="text"
+            name="lastName"
+            value={formik.values.lastName}
+            onChange={formik.handleChange}
+          />
         </div>
-        <button type="submit">Submit</button>
+        {user === null && !formik.isSubmitting && (
+          <button type="submit">Submit</button>
+        )}
       </form>
+      <div className="return-link">
+        {user === null && (
+          <Link to="/">Return to Login</Link>
+        )}
+      </div>
     </div>
   );
 }
 
 export default Signup;
+
+
+
+
+
+
+
+
+
+
+
