@@ -2,7 +2,7 @@ from flask import Flask, make_response, jsonify, request, session, abort
 from flask_restful import Api, Resource
 from flask_cors import CORS
 from config import db, app, api
-from models import User
+from models import User, SessionLog
 from datetime import datetime
 import logging
 
@@ -56,15 +56,22 @@ class Login(Resource):
         user = User.query.filter_by(username=username).first()
 
         if user and user.authenticate(password):
-            session.clear()  # Clear any existing session variables
-            session['user_id'] = user.id  # Storing the user ID in the session
+            session.clear()
+            session['user_id'] = user.id
             session['loggedIn'] = True
-            session['start_time'] = datetime.now().isoformat()  # Set session start timestamp
+            session['start_time'] = datetime.now().isoformat()
+
+            session_log = SessionLog(user_id=user.id)
+            db.session.add(session_log)
+            db.session.commit()
+
             return {
                 "message": "Login successful",
                 "user": {
-                    "username": user.username  # Include the username in the response
-                    # Add any other user properties you want to include
+                    "username": user.username,
+                    "email": user.email,
+                    "first_name": user.first_name,
+                    "last_name": user.last_name
                 }
             }
         else:
@@ -79,7 +86,14 @@ class AuthorizationSession(Resource):
             user_id = session['user_id']
             user = User.query.filter_by(id=user_id).first()  # Alternative query
             if user:
-                return user.to_dict(), 200
+                # Retrieve the session logs for the user
+                session_logs = SessionLog.query.filter_by(user_id=user_id).all()
+
+                # Serialize the session logs
+                serialized_session_logs = [session_log.to_dict() for session_log in session_logs]
+
+                return serialized_session_logs, 200
+
         abort(401, "Unauthorized")
 
 
@@ -94,6 +108,11 @@ class Logout(Resource):
                 if user.id == session['user_id']:
                     session.clear()  # Clear all session variables
                     session['end_time'] = datetime.now().isoformat()
+
+                    # Log the session to the SessionLog table
+                    session_log = SessionLog.query.filter_by(user_id=user.id, logout_time=None).first()
+                    session_log.logout_time = datetime.now()
+                    db.session.commit()
 
                     logging.info(f"User logged out: {user.username}")  # Log the user object
 

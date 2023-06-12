@@ -21,6 +21,27 @@ metadata = MetaData(naming_convention=convention)
 
 bcrypt = Bcrypt()
 
+class SessionLog(db.Model):
+    __tablename__ = 'session_log'
+
+    session_id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    login_time = db.Column(db.DateTime, nullable=False, default=db.func.current_timestamp())
+    logout_time = db.Column(db.DateTime)
+    user_data = db.Column(db.JSON)
+
+    user = db.relationship('User', backref=db.backref('session_logs', lazy=True))
+
+    def __init__(self, user_id=None, user_data=None):
+        if user_id:
+            self.user_id = user_id
+        if user_data:
+            self.user_data = user_data
+
+    def __repr__(self):
+        return f"<SessionLog session_id={self.session_id} user_id={self.user_id}>"
+
+
 class User(db.Model, SerializerMixin):
     __tablename__ = 'users'
 
@@ -39,20 +60,25 @@ class User(db.Model, SerializerMixin):
 
     @password_hash.setter
     def password_hash(self, password):
-        password_hash = bcrypt.generate_password_hash(password.encode('utf-8'))
-        self._password_hash = password_hash.decode('utf-8')
+        if password is not None:
+            password_hash = bcrypt.generate_password_hash(password.encode('utf-8'))
+            self._password_hash = password_hash.decode('utf-8')
+        else:
+            self._password_hash = None
 
     def authenticate(self, password):
         return bcrypt.check_password_hash(self.password_hash, password)
 
-    def to_dict(self):
-        return {
-            'username': self.username,
-            'email': self.email,
-            'first_name': self.first_name,
-            'last_name': self.last_name
-        }
 
     def __repr__(self):
         return f"<User {self.username}>"
+
+
+
+
+
+    
+
+
+
 

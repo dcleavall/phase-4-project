@@ -28,7 +28,8 @@ function App() {
         }
       })
       .then((data) => {
-        setLoggedIn(true);
+        console.log(data);
+      setLoggedIn(true);
       })
       .catch((error) => {
         console.error("Error:", error);
