@@ -120,6 +120,31 @@ class Logout(Resource):
 
         abort(401, "Unauthorized")
 
+class DeleteUser(Resource):
+    def delete(self):
+        if 'user_id' in session and session['loggedIn']:
+            user_id = session['user_id']
+            user = User.query.filter_by(id=user_id).first()
+
+            if user:
+                try:
+                    # Delete the session logs for the user
+                    SessionLog.query.filter_by(user_id=user_id).delete()
+
+                    # Delete the user
+                    db.session.delete(user)
+                    db.session.commit()
+
+                    session.clear()  # Clear all session variables
+
+                    return {"message": "User deleted successfully"}, 200
+                except Exception as e:
+                    db.session.rollback()
+                    return {"message": f"Failed to delete user: {str(e)}"}, 500
+
+        abort(401, "Unauthorized")
+
+
 
 # Add resource routes
 api.add_resource(Users, '/users')
@@ -127,6 +152,7 @@ api.add_resource(Signup, '/signup')
 api.add_resource(Login, '/login')
 api.add_resource(AuthorizationSession, '/authorized')
 api.add_resource(Logout, '/logout')
+api.add_resource(DeleteUser, '/delete-user')
 
 if __name__ == '__main__':
     app.run(port=5555, debug=True) 

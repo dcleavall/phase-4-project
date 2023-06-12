@@ -8,6 +8,7 @@ from sqlalchemy_serializer import SerializerMixin
 from config import db
 from sqlalchemy.ext.hybrid import hybrid_property
 from flask_bcrypt import Bcrypt
+from datetime import datetime
 
 convention = {
     "ix": "ix_%(column_0_label)s",
@@ -21,7 +22,7 @@ metadata = MetaData(naming_convention=convention)
 
 bcrypt = Bcrypt()
 
-class SessionLog(db.Model):
+class SessionLog(db.Model, SerializerMixin):
     __tablename__ = 'session_log'
 
     session_id = db.Column(db.Integer, primary_key=True)
@@ -40,6 +41,15 @@ class SessionLog(db.Model):
 
     def __repr__(self):
         return f"<SessionLog session_id={self.session_id} user_id={self.user_id}>"
+
+    def to_dict(self):
+        return {
+            "session_id": self.session_id,
+            "user_id": self.user_id,
+            "login_time": self.login_time.isoformat() if self.login_time else None,
+            "logout_time": self.logout_time.isoformat() if self.logout_time else None,
+            "user_data": self.user_data
+        }
 
 
 class User(db.Model, SerializerMixin):

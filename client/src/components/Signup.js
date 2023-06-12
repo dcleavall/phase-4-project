@@ -11,7 +11,7 @@ const SignupSchema = Yup.object().shape({
   lastName: Yup.string().required('Last name is required'),
 });
 
-function Signup({ loggedIn }) {
+function Signup() {
   const [user, setUser] = useState(null);
   const [error, setError] = useState(null);
   const history = useHistory();
@@ -114,7 +114,7 @@ function Signup({ loggedIn }) {
       </form>
       <div className="return-link">
         {user === null && (
-          <Link to="/">Return to Login</Link>
+          <Link to="/login">Return to Login</Link>
         )}
       </div>
     </div>
@@ -122,6 +122,7 @@ function Signup({ loggedIn }) {
 }
 
 export default Signup;
+
 
 
 

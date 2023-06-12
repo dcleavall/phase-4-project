@@ -46,6 +46,17 @@
   button[type='submit']:hover {
     background-color: #45a049;
   }
+  .signup-button {
+    display: inline-block;
+    padding: 10px 20px; 
+    background-color: #45a049;
+    color: #fff;
+    text-decoration: none;
+    border: none;
+    border-radius: 5px;
+    margin-top: 10px;
+    text-align: center;
+  }
   
   .error {
     color: red;

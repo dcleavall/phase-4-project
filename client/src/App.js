@@ -1,4 +1,3 @@
-// App.js
 import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Switch, Route, Redirect, Link, useHistory, useLocation } from "react-router-dom";
 
@@ -6,12 +5,14 @@ import { BrowserRouter as Router, Switch, Route, Redirect, Link, useHistory, use
 import Signup from "./components/Signup";
 import Login from "./components/Login";
 import Home from "./components/Home";
+import UserCard from "./components/UserCard";
 import "./App.css";
 
 function App() {
   const history = useHistory();
   const location = useLocation();
   const [loggedIn, setLoggedIn] = useState(false);
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
     fetchUser();
@@ -29,7 +30,8 @@ function App() {
       })
       .then((data) => {
         console.log(data);
-      setLoggedIn(true);
+        setLoggedIn(true);
+        setUser(data || null); // Set the user data in state, or null if not available
       })
       .catch((error) => {
         console.error("Error:", error);
@@ -57,6 +59,7 @@ function App() {
       .then((data) => {
         console.log(data);
         setLoggedIn(true);
+        setUser(data || null); // Set the user data in state, or null if not available
         history.push("/");
       })
       .catch((error) => {
@@ -73,33 +76,54 @@ function App() {
     })
       .then((response) => {
         if (response.ok) {
-          return response.json();
+          setLoggedIn(false);
+          setUser(null); // Reset the user data
+          history.push("/login?auth=true");
         } else {
           throw new Error("Logout failed");
         }
-      })
-      .then((data) => {
-        console.log(data.message);
-        console.log(data.user);
-        setLoggedIn(false);
-        history.push("/login?auth=true");
       })
       .catch((error) => {
         console.error("Error:", error);
       });
   };
 
+  const deleteUser = () => {
+    fetch('/delete-user', {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      // Include any necessary information to identify the user to be deleted
+      body: JSON.stringify({ id: user.id }), // Replace `user.id` with the correct property name
+    })
+      .then((response) => {
+        if (response.ok) {
+          setLoggedIn(false);
+          setUser(null);
+          history.push("/login?deleted=true");
+        } else {
+          throw new Error("Failed to delete user");
+        }
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  };
+  
+
   return (
     <Router>
       <div className="container">
-        {loggedIn ? (
-          <button onClick={handleLogout}>Logout</button>
-        ) : null}
+        {loggedIn && <button onClick={handleLogout}>Logout</button>}
 
         <Switch>
           <Route exact path="/">
             {loggedIn ? (
-              <Home />
+              <>
+                <Home user={user} deleteUser={deleteUser} />
+                {user && <UserCard user={user} />}
+              </>
             ) : (
               <Redirect to="/login" />
             )}
@@ -122,9 +146,9 @@ function App() {
           </Route>
         </Switch>
 
-        {!loggedIn && location.pathname !== "/signup" && (
+        {!loggedIn && location.pathname === "/login" && (
           <div className="signup-link">
-            <Link to="/signup">Signup</Link>
+            <Link to="/signup" className="signup-button">Signup</Link>
           </div>
         )}
       </div>
@@ -133,6 +157,11 @@ function App() {
 }
 
 export default App;
+
+
+
+
+
 
 
 
