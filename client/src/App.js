@@ -110,7 +110,6 @@ function App() {
         console.error("Error:", error);
       });
   };
-  
 
   return (
     <Router>
@@ -121,8 +120,7 @@ function App() {
           <Route exact path="/">
             {loggedIn ? (
               <>
-                <Home user={user} deleteUser={deleteUser} />
-                {user && <UserCard user={user} />}
+                <Home user={user} />
               </>
             ) : (
               <Redirect to="/login" />
@@ -144,6 +142,14 @@ function App() {
               <Login onLogin={handleLogin} />
             )}
           </Route>
+
+          <Route path="/account">
+            {loggedIn ? (
+              <UserCard user={user} deleteUser={deleteUser} />
+            ) : (
+              <Redirect to="/login" />
+            )}
+          </Route>
         </Switch>
 
         {!loggedIn && location.pathname === "/login" && (
@@ -157,6 +163,10 @@ function App() {
 }
 
 export default App;
+
+
+
+
 
 
 
