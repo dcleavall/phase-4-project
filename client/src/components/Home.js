@@ -78,16 +78,12 @@ const Home = ({ user }) => {
     e.preventDefault();
     const duration = e.target.duration.value;
     const distance = e.target.distance.value;
-  
-    // Ensure that user and user.id are available and valid
-    if (!user || !user.id) {
-      console.error('Invalid user ID');
-      return;
-    }
+
+    
   
     // Create an object with the form data
     const cardioData = {
-      user_id: user.id,
+      user_id: user.user_id,
       type: 'cardio',
       duration: duration,
       distance: distance,
