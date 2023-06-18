@@ -28,7 +28,7 @@ if __name__ == '__main__':
             user_data = {
                 'username': faker.user_name(),
                 'email': faker.email(),
-                'password': password,
+                'password_hash': password,  # Set the password_hash property directly
                 'first_name': faker.first_name(),
                 'last_name': faker.last_name(),
             }
@@ -53,17 +53,27 @@ if __name__ == '__main__':
             nutrition = Nutrition(**data)
             db.session.add(nutrition)
 
+        user_ids = []
         # Seed the Exercise class
         exercise_data = [
-            {'name': 'Exercise 1', 'duration': 30},
-            {'name': 'Exercise 2', 'duration': 45},
-            {'name': 'Exercise 3', 'duration': 60},
+            {'user_id': 1, 'type': 'weightlifting', 'muscle_group': 'Chest', 'duration': 30, 'notes': 'Sample notes', 'distance': None},
+            {'user_id': 2, 'type': 'cardio', 'muscle_group': '', 'duration': 45, 'notes': 'Sample notes', 'distance': 5.0},
             # Add more exercise data as needed
         ]
 
         for data in exercise_data:
-            exercise = Exercise(**data)
+            exercise = Exercise(
+                user_id=data['user_id'],
+                name='',
+                type=data['type'],
+                muscle_group=data['muscle_group'] if data['type'] == 'weightlifting' else '',
+                duration=data['duration'],
+                distance=data['distance'] if data['type'] == 'cardio' else None,
+                notes=data['notes']
+            )
             db.session.add(exercise)
+
+        db.session.commit()
 
         # Seed the HealthChoice class
         health_choices_data = [

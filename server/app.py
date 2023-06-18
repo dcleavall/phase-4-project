@@ -2,7 +2,7 @@ from flask import Flask, make_response, jsonify, request, session, abort
 from flask_restful import Api, Resource
 from flask_cors import CORS
 from config import db, app, api
-from models import User, SessionLog
+from models import User, SessionLog, Exercise
 from datetime import datetime
 import logging
 
@@ -146,6 +146,48 @@ class DeleteUser(Resource):
 
 
 
+
+
+class ExerciseID(Resource):
+    def get(self):
+        user_id = session.get('user_id')
+
+        if not user_id:
+            return {'message': 'Unauthorized'}, 401
+
+        exercises = Exercise.query.filter_by(user_id=user_id).all()
+        exercise_list = [exercise.to_dict() for exercise in exercises]
+
+        return exercise_list, 200
+
+    def post(self):
+        user_id = session.get('user_id')
+
+        if not user_id:
+            return {'message': 'Unauthorized'}, 401
+
+        exercise_data = request.get_json()
+        exercise = Exercise(
+            user_id=user_id,
+            name='',
+            type=exercise_data['type'],
+            muscle_group=exercise_data.get('muscle_group') if exercise_data['type'] == 'weightlifting' else None,
+            duration=exercise_data['duration'],
+            distance=exercise_data.get('distance') if exercise_data['type'] == 'cardio' else None,
+            notes=exercise_data['notes']
+        )
+
+        db.session.add(exercise)
+        db.session.commit()
+
+        return {'message': 'Exercise data submitted successfully'}, 201
+
+
+
+
+
+
+
 # Add resource routes
 api.add_resource(Users, '/users')
 api.add_resource(Signup, '/signup')
@@ -153,6 +195,7 @@ api.add_resource(Login, '/login')
 api.add_resource(AuthorizationSession, '/authorized')
 api.add_resource(Logout, '/logout')
 api.add_resource(DeleteUser, '/delete-user')
+api.add_resource(ExerciseID, '/exercises')
 
 if __name__ == '__main__':
     app.run(port=5555, debug=True) 

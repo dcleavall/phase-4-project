@@ -103,10 +103,10 @@ class User(db.Model, SerializerMixin):
 class HealthChoice(db.Model, SerializerMixin):
     __tablename__ = 'selections'
 
-    selection_id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
-    nutrition_id = Column(Integer, ForeignKey('nutrition.id'), nullable=False)
-    exercise_id = Column(Integer, ForeignKey('exercise.id'), nullable=False)
+    selection_id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    nutrition_id = db.Column(db.Integer, db.ForeignKey('nutrition.id'), nullable=False)
+    exercise_id = db.Column(db.Integer, db.ForeignKey('exercise.id'), nullable=False)
 
 
     def __init__(self, user_id=None, nutrition_id=None, exercise_id=None):
@@ -123,11 +123,11 @@ class HealthChoice(db.Model, SerializerMixin):
 class Nutrition(db.Model, SerializerMixin):
     __tablename__ = 'nutrition'
 
-    id = Column(Integer, primary_key=True)
-    name = Column(String, nullable=False)
-    calories = Column(Integer, nullable=False)
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String, nullable=False)
+    calories = db.Column(db.Integer, nullable=False)
 
-    health_choices = relationship('HealthChoice', backref='nutrition')
+    health_choices = db.relationship('HealthChoice', backref='nutrition')
     users = association_proxy('health_choices', 'user')
 
     def __repr__(self):
@@ -137,13 +137,38 @@ class Nutrition(db.Model, SerializerMixin):
 class Exercise(db.Model, SerializerMixin):
     __tablename__ = 'exercise'
 
-    id = Column(Integer, primary_key=True)
-    name = Column(String, nullable=False)
-    duration = Column(Integer, nullable=False)
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))  # Updated foreign key relationship
+    name = db.Column(db.String, nullable=False, default='')
+    type = db.Column(db.String, nullable=False, default='weightlifting')
+    muscle_group = db.Column(db.String, nullable=True, default='')
+    duration = db.Column(db.Integer, nullable=False)
+    distance = db.Column(db.Float, nullable=True)
+    notes = db.Column(db.String, nullable=False, default='')
 
-    health_choices = db.relationship('HealthChoice', backref='exercise')
-    users = association_proxy('health_choices', 'user')
-    
+    user = db.relationship('User', backref='exercises')  # Updated backref relationship
+
+
+    def __init__(self, user_id, name, type, muscle_group, duration, distance, notes):
+        self.user_id = user_id
+        self.name = name
+        self.type = type
+        self.muscle_group = muscle_group
+        self.duration = duration
+        self.distance = distance
+        self.notes = notes
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'user_id': self.user_id,
+            'name': self.name,
+            'type': self.type,
+            'muscle_group': self.muscle_group,
+            'duration': self.duration,
+            'distance': self.distance,
+            'notes': self.notes
+        }
 
     def __repr__(self):
         return f"<Exercise id={self.id} name={self.name}>"

@@ -12,32 +12,32 @@ function App() {
   const history = useHistory();
   const location = useLocation();
   const [loggedIn, setLoggedIn] = useState(false);
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState();
 
   useEffect(() => {
-    fetchUser();
-  }, []);
+    
+    const fetchUser = () => {
+      fetch("/authorized")
+        .then((response) => {
+          if (response.ok) {
+            return response.json();
+          } else {
+            console.log("Unexpected response:", response);
+            throw new Error("Authorization failed");
+          }
+        })
+        .then((data) => {
+          setLoggedIn(true);
+          setUser(data); // Set the user data in state, or null if not available
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+          setLoggedIn(false);
+        });
+    };
 
-  const fetchUser = () => {
-    fetch("/authorized")
-      .then((response) => {
-        if (response.ok) {
-          return response.json();
-        } else {
-          console.log("Unexpected response:", response);
-          throw new Error("Authorization failed");
-        }
-      })
-      .then((data) => {
-        console.log(data);
-        setLoggedIn(true);
-        setUser(data || null); // Set the user data in state, or null if not available
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-        setLoggedIn(false);
-      });
-  };
+    fetchUser(); // Call fetchUser when the component mounts
+  }, []);
 
   const handleLogin = (username, password) => {
     fetch("/login", {
@@ -59,7 +59,7 @@ function App() {
       .then((data) => {
         console.log(data);
         setLoggedIn(true);
-        setUser(data || null); // Set the user data in state, or null if not available
+        setUser(data || {}); // Set the user data in state, or null if not available
         history.push("/");
       })
       .catch((error) => {
@@ -95,7 +95,7 @@ function App() {
         "Content-Type": "application/json",
       },
       // Include any necessary information to identify the user to be deleted
-      body: JSON.stringify({ id: user.id }), // Replace `user.id` with the correct property name
+      body: JSON.stringify({ user_id: user.user_id }), // Replace `user.user_id` with the correct property name
     })
       .then((response) => {
         if (response.ok) {
@@ -163,6 +163,10 @@ function App() {
 }
 
 export default App;
+
+
+
+
 
 
 
