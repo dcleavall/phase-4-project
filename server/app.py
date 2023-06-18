@@ -182,6 +182,23 @@ class ExerciseID(Resource):
 
         return {'message': 'Exercise data submitted successfully'}, 201
 
+    def delete(self):
+        user_id = session.get('user_id')
+
+        if not user_id:
+            return {'message': 'Unauthorized'}, 401
+
+        exercise = Exercise.query.filter_by(user_id=user_id).first()
+
+        if not exercise:
+            return {'message': 'Exercise not found'}, 404
+
+        db.session.delete(exercise)
+        db.session.commit()
+
+        return {'message': 'Exercise deleted successfully'}, 200
+
+
 
 
 

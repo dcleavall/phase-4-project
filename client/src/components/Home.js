@@ -79,7 +79,7 @@ const Home = ({ user }) => {
     const duration = e.target.duration.value;
     const distance = e.target.distance.value;
 
-    
+
   
     // Create an object with the form data
     const cardioData = {
@@ -126,6 +126,44 @@ const Home = ({ user }) => {
       .catch((error) => {
         // Handle error
         console.error('Error submitting exercise data:', error);
+      });
+  };
+
+  const handleDelete = () => {
+    // Make a DELETE request to the backend API endpoint for deleting the exercise
+    fetch(`/exercises`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(exerciseData),
+    })
+      .then((response) => {
+        if (response.ok) {
+          // Handle successful deletion
+          console.log('Exercise data deleted successfully');
+          // Fetch updated exercise data
+          fetch('/exercises')
+            .then((response) => {
+              if (!response.ok) {
+                throw new Error('Error fetching exercise data');
+              }
+              return response.json();
+            })
+            .then((data) => {
+              setExerciseData(data);
+            })
+            .catch((error) => {
+              console.error('Error fetching exercise data:', error);
+            });
+        } else {
+          // Handle error response
+          throw new Error('Exercise data deletion failed');
+        }
+      })
+      .catch((error) => {
+        // Handle error
+        console.error('Error deleting exercise data:', error);
       });
   };
 
@@ -206,6 +244,8 @@ const Home = ({ user }) => {
                         <p>Distance: {exercise.distance}</p>
                       )}
                       <p>Notes: {exercise.notes}</p>
+                      <button onClick = {handleDelete}>Delete</button>
+                      <button >Edit</button> 
                       <hr />
                     </div>
                   ))}
