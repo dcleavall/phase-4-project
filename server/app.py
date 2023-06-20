@@ -198,8 +198,40 @@ class ExerciseID(Resource):
 
         return {'message': 'Exercise deleted successfully'}, 200
 
+    def patch(self):
+        user_id = session.get('user_id')
 
+        if not user_id:
+            return {'message': 'Unauthorized'}, 401
 
+        exercise = Exercise.query.filter_by(user_id=user_id).first()
+
+        if not exercise:
+            return {'message': 'Exercise not found'}, 404
+
+        exercise_data = request.get_json()
+
+        updated_exercise_data = {
+            'user_id': user_id,
+            'type': exercise_data.get('type', exercise.type),
+            'muscle_group': exercise_data.get('muscle_group', exercise.muscle_group),
+            'duration': exercise_data.get('duration', exercise.duration),
+            'distance': exercise_data.get('distance', exercise.distance),
+            'notes': exercise_data.get('notes', exercise.notes)
+        }
+
+        exercise.type = updated_exercise_data['type']
+        exercise.muscle_group = updated_exercise_data['muscle_group']
+        exercise.duration = updated_exercise_data['duration']
+        exercise.distance = updated_exercise_data['distance']
+        exercise.notes = updated_exercise_data['notes']
+
+        db.session.commit()
+
+        return {'message': 'Exercise updated successfully'}, 200
+
+class Nutrition(Resource):
+    pass
 
 
 

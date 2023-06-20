@@ -65,7 +65,6 @@ class User(db.Model, SerializerMixin):
     last_name = db.Column(db.String, nullable=False)
 
     health_choices = db.relationship('HealthChoice', backref='user' )
-    nutritions = association_proxy('health_choices', 'nutrition')
     serialize_only = ('username', 'email', 'first_name', 'last_name')
     
 
@@ -124,11 +123,40 @@ class Nutrition(db.Model, SerializerMixin):
     __tablename__ = 'nutrition'
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String, nullable=False)
-    calories = db.Column(db.Integer, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    name = db.Column(db.String, nullable=False, default='')
+    meal = db.Column(db.String, nullable=False)
+    protein = db.Column(db.Integer, nullable=False)
+    fat = db.Column(db.Integer, nullable=False)
+    carbs = db.Column(db.Integer, nullable=False)
+    macros = db.Column(db.Integer, nullable = False)
+    goals = db.Column(db.Integer, nullable=False)
+    
 
-    health_choices = db.relationship('HealthChoice', backref='nutrition')
-    users = association_proxy('health_choices', 'user')
+    user = db.relationship('User', backref='nutritions')  # Updated backref relationship
+
+    def init(self, user_id, meal, protein, fat, carbs, macros, goals):
+        self.user_id= user_id
+        self.name= name
+        self.meal = meal
+        self.protein = protein
+        self.fat = fat
+        self.carbs =  carbs
+        self.macros = macros
+        self.goals= goals
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'user_id': self.user_id,
+            'meal': self.meal,
+            'protein': self.protein,
+            'fat': self.fat,
+            'carbs': self.carbs,
+            'macros': self.macros,
+            'goals': self.goals
+        }
 
     def __repr__(self):
         return f"<Nutrition id={self.id} name={self.name}>"
@@ -140,7 +168,7 @@ class Exercise(db.Model, SerializerMixin):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))  # Updated foreign key relationship
     name = db.Column(db.String, nullable=False, default='')
-    type = db.Column(db.String, nullable=False, default='weightlifting')
+    type = db.Column(db.String, nullable=False, default='')
     muscle_group = db.Column(db.String, nullable=True, default='')
     duration = db.Column(db.Integer, nullable=False)
     distance = db.Column(db.Float, nullable=True)

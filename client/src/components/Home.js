@@ -167,16 +167,65 @@ const Home = ({ user }) => {
       });
   };
 
+  const handleEdit = () => {
+    const updatedExerciseData = {
+      // Update the exercise properties based on the changes made by the user
+      user_id: user.user_id,
+      type: exerciseData.type,
+      muscle_group: exerciseData.muscle_group,
+      duration: exerciseData.duration,
+      distance: exerciseData.distance,
+      notes: exerciseData.notes,
+    };
+  
+    fetch(`/exercises`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(updatedExerciseData),
+    })
+      .then((response) => {
+        if (response.ok) {
+          // Handle successful update
+          console.log('Exercise data updated successfully');
+          // Fetch updated exercise data
+          fetch('/exercises')
+            .then((response) => {
+              if (!response.ok) {
+                throw new Error('Error fetching exercise data');
+              }
+              return response.json();
+            })
+            .then((data) => {
+              setExerciseData(data);
+            })
+            .catch((error) => {
+              console.error('Error fetching exercise data:', error);
+            });
+        } else {
+          // Handle error response
+          throw new Error('Exercise data update failed');
+        }
+      })
+      .catch((error) => {
+        // Handle error
+        console.error('Error updating exercise data:', error);
+      });
+  };
+
   return (
     <div className="home">
-      <h1>Welcome to the Homepage</h1>
-      {user !== null ? (
-        <>
-          <div className="account-button-container">
+      
+    <div className="account-button-container">
             <Link to="/account" className="account-button">
               Account
             </Link>
           </div>
+      <h1>Welcome to the Homepage</h1>
+      {user !== null ? (
+        <>
+
           <h2>Select a Health Choice:</h2>
           <div className="health-choice-buttons">
             <button
@@ -245,7 +294,7 @@ const Home = ({ user }) => {
                       )}
                       <p>Notes: {exercise.notes}</p>
                       <button onClick = {handleDelete}>Delete</button>
-                      <button >Edit</button> 
+                      <button onClick = {handleEdit}>Edit</button> 
                       <hr />
                     </div>
                   ))}

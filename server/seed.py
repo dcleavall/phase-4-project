@@ -42,16 +42,28 @@ if __name__ == '__main__':
             db.session.add(session_log)
 
         # Seed the Nutrition class
+        user_ids = []
         nutrition_data = [
-            {'name': 'Nutrition 1', 'calories': 100},
-            {'name': 'Nutrition 2', 'calories': 200},
-            {'name': 'Nutrition 3', 'calories': 300},
+            {'user_id': 1, 'meal': 'chicken salad', 'protein': 25, 'fat': 5, 'carbs':30,  'macros': 'sample macros', 'goals':'sample goals'},
+            {'user_id': 2, 'meal': 'peanut butter bagel', 'protein': 20,'fat': 30, 'carbs': 31, 'macros': 'sample', 'goals': 'sample goals'},
             # Add more nutrition data as needed
         ]
 
         for data in nutrition_data:
-            nutrition = Nutrition(**data)
+            nutrition = Nutrition(
+                user_id=data['user_id'],
+                name='',
+                meal=data['meal'],
+                protein=data['protein'],
+                fat=data['fat'],
+                carbs=data['carbs'],
+                macros=data['macros'],
+                goals=data['goals']
+            )
             db.session.add(nutrition)
+
+        db.session.commit()
+
 
         user_ids = []
         # Seed the Exercise class
