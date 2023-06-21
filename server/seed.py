@@ -8,7 +8,7 @@ from faker import Faker
 from flask_migrate import Migrate
 
 from config import app, db
-from models import User, HealthChoice, Nutrition, Exercise, SessionLog
+from models import User, Nutrition, Exercise, SessionLog, Mindfulness
 # from sqlalchemy.ext.associationproxy import association_proxy 
 
 faker = Faker()
@@ -87,19 +87,26 @@ if __name__ == '__main__':
 
         db.session.commit()
 
-        # Seed the HealthChoice class
-        health_choices_data = [
-            {'user_id': 1, 'nutrition_id': 1, 'exercise_id': 1},
-            {'user_id': 2, 'nutrition_id': 2, 'exercise_id': 2},
-            {'user_id': 3, 'nutrition_id': 3, 'exercise_id': 3},
-            # Add more health choices data as needed
+        user_ids = []
+
+        mindfulness_data = [
+            {'user_id': 1, 'type':'yoga', 'duration':25},
+            {'user_id': 2, 'type': 'meditation', 'duration':20},
+            {'user_id': 3, 'type': 'other', 'duration': 30}
+
         ]
 
-        for data in health_choices_data:
-            health_choice = HealthChoice(**data)
-            db.session.add(health_choice)
-
+        for data in mindfulness_data:
+            mindfulness = Mindfulness(
+                user_id=data['user_id'],
+                name='',
+                type=data['type'],
+                duration=data['duration']
+            )
+            db.session.add(mindfulness)
+        
         db.session.commit()
+
 
 
 

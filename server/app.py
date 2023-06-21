@@ -230,8 +230,63 @@ class ExerciseID(Resource):
 
         return {'message': 'Exercise updated successfully'}, 200
 
-class Nutrition(Resource):
-    pass
+# class Nutrition(Resource):
+#     def get(self):
+#         user_id = session.get('user_id')
+
+#         if not user_id:
+#             return {'message': 'Unauthorized'}, 401
+
+#         nutritions = Exercise.query.filter_by(user_id=user_id).all()
+#         nutrition_list = [nutrition.to_dict() for nutrition in nutrition]
+
+#         return nutrition_list, 200
+
+#     def post(self):
+#         user_id = session.get('user_id')
+
+#         if not user_id:
+#             return {'message': 'Unauthorized'}, 401
+
+#         nutrition_data = request.get_json()
+#         nutrition = Nutrition(
+#             user_id=user_id,
+#             name='',
+#             meal=nutrition_data['meal'],
+#             protein=nutrition_data['protein']
+#             fat=nutrition_data['duration'],
+#             carbs=nutrition_data['carbs']
+#             macros=nutrition_data['macros']
+#             goals=nutrition_data['goals']
+#         )
+
+#         db.session.add(nutrition)
+#         db.session.commit()
+
+#         return {'message': 'Nutrition data submitted successfully'}, 201
+    
+#     def delete(self):
+#         user_id = session.get('user_id')
+
+#         if not user_id:
+#             return {'message': 'Unauthorized'}, 401
+
+#         nutrition = Nutrition.query.filter_by(user_id=user_id).first()
+
+#         if not nutrition:
+#             return {'message': 'Nutrition not found'}, 404
+
+#         db.session.delete(nutrition)
+#         db.session.commit()
+
+
+#     def patch(self):
+#         pass
+
+#     pass
+
+# class Mindfulness(self):
+#     pass
 
 
 
@@ -245,6 +300,7 @@ api.add_resource(AuthorizationSession, '/authorized')
 api.add_resource(Logout, '/logout')
 api.add_resource(DeleteUser, '/delete-user')
 api.add_resource(ExerciseID, '/exercises')
+# api.add_resource(Nutrition, '/nutrition')
 
 if __name__ == '__main__':
     app.run(port=5555, debug=True) 

@@ -64,7 +64,6 @@ class User(db.Model, SerializerMixin):
     first_name = db.Column(db.String, nullable=False)
     last_name = db.Column(db.String, nullable=False)
 
-    health_choices = db.relationship('HealthChoice', backref='user' )
     serialize_only = ('username', 'email', 'first_name', 'last_name')
     
 
@@ -99,25 +98,6 @@ class User(db.Model, SerializerMixin):
     def __repr__(self):
         return f"<User {self.username}>"
 
-class HealthChoice(db.Model, SerializerMixin):
-    __tablename__ = 'selections'
-
-    selection_id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    nutrition_id = db.Column(db.Integer, db.ForeignKey('nutrition.id'), nullable=False)
-    exercise_id = db.Column(db.Integer, db.ForeignKey('exercise.id'), nullable=False)
-
-
-    def __init__(self, user_id=None, nutrition_id=None, exercise_id=None):
-        if user_id:
-            self.user_id = user_id
-        if nutrition_id:
-            self.nutrition_id = nutrition_id
-        if exercise_id:
-            self.exercise_id = exercise_id
-
-    def __repr__(self):
-        return f"<HealthChoice id={self.selection_id} user_id={self.user_id}>"
 
 class Nutrition(db.Model, SerializerMixin):
     __tablename__ = 'nutrition'
@@ -160,6 +140,36 @@ class Nutrition(db.Model, SerializerMixin):
 
     def __repr__(self):
         return f"<Nutrition id={self.id} name={self.name}>"
+
+class Mindfulness(db.Model, SerializerMixin):
+    __tablename__ = 'mindfullness'
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    name = db.Column(db.String, nullable=False, default='')
+    type = db.Column(db.String, nullable=False, default='')
+    duration = db.Column(db.Integer, nullable=False)
+
+    user = db.relationship('User', backref='mindfulnesss')
+
+    def __init__(self, user_id, name, type, duration):
+        self.user_id = user_id
+        self.name = name
+        self.type = type
+        self.duration = duration
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'user_id': self.user_id,
+            'name': self.name,
+            'type': self.type,
+            'duration': self.duration
+        }
+
+    def __repr__(self):
+        return f"<Mindfulness id={self.id} name={self.name}>"
+
 
 
 class Exercise(db.Model, SerializerMixin):
