@@ -2,7 +2,7 @@ from flask import Flask, make_response, jsonify, request, session, abort
 from flask_restful import Api, Resource
 from flask_cors import CORS
 from config import db, app, api
-from models import User, SessionLog, Exercise
+from models import User, SessionLog, Exercise, Nutrition, Mindfulness
 from datetime import datetime
 import logging
 
@@ -230,40 +230,92 @@ class ExerciseID(Resource):
 
         return {'message': 'Exercise updated successfully'}, 200
 
-# class Nutrition(Resource):
-#     def get(self):
-#         user_id = session.get('user_id')
+class Nutritions(Resource):
+    def get(self):
+        user_id = session.get('user_id')
 
-#         if not user_id:
-#             return {'message': 'Unauthorized'}, 401
+        if not user_id:
+            return {'message': 'Unauthorized'}, 401
 
-#         nutritions = Exercise.query.filter_by(user_id=user_id).all()
-#         nutrition_list = [nutrition.to_dict() for nutrition in nutrition]
+        nutritions = Nutrition.query.filter_by(user_id=user_id).all()
+        nutrition_list = [nutrition.to_dict() for nutrition in nutrition]
 
-#         return nutrition_list, 200
+        return nutrition_list, 200
 
-#     def post(self):
-#         user_id = session.get('user_id')
+    def post(self):
+        user_id = session.get('user_id')
 
-#         if not user_id:
-#             return {'message': 'Unauthorized'}, 401
+        if not user_id:
+            return {'message': 'Unauthorized'}, 401
 
-#         nutrition_data = request.get_json()
-#         nutrition = Nutrition(
-#             user_id=user_id,
-#             name='',
-#             meal=nutrition_data['meal'],
-#             protein=nutrition_data['protein']
-#             fat=nutrition_data['duration'],
-#             carbs=nutrition_data['carbs']
-#             macros=nutrition_data['macros']
-#             goals=nutrition_data['goals']
-#         )
+        nutrition_data = request.get_json()
+        nutrition = Nutrition(
+            user_id=user_id,
+            name='',
+            meal=nutrition_data.get('meal'),
+            protein=nutrition_data.get('protein'),
+            fat=nutrition_data.get('fat'),
+            carbs=nutrition_data.get('carbs'),
+            macros=nutrition_data.get('macros'),
+            goals=nutrition_data.get('goals')
+        )
 
-#         db.session.add(nutrition)
-#         db.session.commit()
+        db.session.add(nutrition)
+        db.session.commit()
+        
 
-#         return {'message': 'Nutrition data submitted successfully'}, 201
+        return {'message': 'Nutrition data submitted successfully'}, 201
+    
+    # def delete(self):
+    #     user_id = session.get('user_id')
+
+    #     if not user_id:
+    #         return {'message': 'Unauthorized'}, 401
+
+    #     nutrition = Nutrition.query.filter_by(user_id=user_id).first()
+
+    #     if not nutrition:
+    #         return {'message': 'Nutrition not found'}, 404
+
+    #     db.session.delete(nutrition)
+    #     db.session.commit()
+
+
+#     def patch(self):
+#         pass
+
+
+class Mindfulnesss(Resource):
+    def get(self):
+        user_id = session.get('user_id')
+
+        if not user_id:
+            return {'message': 'Unauthorized'}, 401
+
+        mindfulnesss = Mindfulness.query.filter_by(user_id=user_id).all()
+        mindfulness_list = [mindfulness.to_dict() for mindfulness in mindfulness]
+
+        return mindfulness_list, 200
+
+    def post(self):
+        user_id = session.get('user_id')
+
+        if not user_id:
+            return {'message': 'Unauthorized'}, 401
+
+        mindfulness_data = request.get_json()
+        mindfulness = Mindfulness(
+            user_id=user_id,
+            name='',
+            type=mindfulness_data['type'],
+            duration=mindfulness_data['duration'],
+            notes=mindfulness_data['notes']
+        )
+
+        db.session.add(mindfulness)
+        db.session.commit()
+
+        return {'message': 'Mindfulness data submitted successfully'}, 201
     
 #     def delete(self):
 #         user_id = session.get('user_id')
@@ -271,22 +323,16 @@ class ExerciseID(Resource):
 #         if not user_id:
 #             return {'message': 'Unauthorized'}, 401
 
-#         nutrition = Nutrition.query.filter_by(user_id=user_id).first()
+#         mindfulness = Mindfulness.query.filter_by(user_id=user_id).first()
 
-#         if not nutrition:
+#         if not mindfulness:
 #             return {'message': 'Nutrition not found'}, 404
 
-#         db.session.delete(nutrition)
+#         db.session.delete(mindfulness)
 #         db.session.commit()
-
 
 #     def patch(self):
 #         pass
-
-#     pass
-
-# class Mindfulness(self):
-#     pass
 
 
 
@@ -300,7 +346,8 @@ api.add_resource(AuthorizationSession, '/authorized')
 api.add_resource(Logout, '/logout')
 api.add_resource(DeleteUser, '/delete-user')
 api.add_resource(ExerciseID, '/exercises')
-# api.add_resource(Nutrition, '/nutrition')
+api.add_resource(Nutritions, '/nutrition')
+api.add_resource(Mindfulnesss, '/mindfulness')
 
 if __name__ == '__main__':
     app.run(port=5555, debug=True) 

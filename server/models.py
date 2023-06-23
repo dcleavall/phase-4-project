@@ -110,33 +110,33 @@ class Nutrition(db.Model, SerializerMixin):
     fat = db.Column(db.Integer, nullable=False)
     carbs = db.Column(db.Integer, nullable=False)
     macros = db.Column(db.Integer, nullable = False)
-    goals = db.Column(db.Integer, nullable=False)
+    goals = db.Column(db.String, nullable=False)
     
 
     user = db.relationship('User', backref='nutritions')  # Updated backref relationship
 
-    def init(self, user_id, meal, protein, fat, carbs, macros, goals):
-        self.user_id= user_id
-        self.name= name
-        self.meal = meal
-        self.protein = protein
-        self.fat = fat
-        self.carbs =  carbs
-        self.macros = macros
-        self.goals= goals
+    # def __init__(self, user_id, name, meal, protein, fat, carbs, macros, goals):
+    #     self.user_id = user_id
+    #     self.name = name
+    #     self.meal = meal
+    #     self.protein = protein
+    #     self.fat = fat
+    #     self.carbs = carbs
+    #     self.macros = macros
+    #     self.goals = goals
 
-    def to_dict(self):
-        return {
-            'id': self.id,
-            'name': self.name,
-            'user_id': self.user_id,
-            'meal': self.meal,
-            'protein': self.protein,
-            'fat': self.fat,
-            'carbs': self.carbs,
-            'macros': self.macros,
-            'goals': self.goals
-        }
+    # def to_dict(self):
+    #     return {
+    #         'id': self.id,
+    #         'name': self.name,
+    #         'user_id': self.user_id,
+    #         'meal': self.meal,
+    #         'protein': self.protein,
+    #         'fat': self.fat,
+    #         'carbs': self.carbs,
+    #         'macros': self.macros,
+    #         'goals': self.goals
+    #     }
 
     def __repr__(self):
         return f"<Nutrition id={self.id} name={self.name}>"
@@ -149,23 +149,26 @@ class Mindfulness(db.Model, SerializerMixin):
     name = db.Column(db.String, nullable=False, default='')
     type = db.Column(db.String, nullable=False, default='')
     duration = db.Column(db.Integer, nullable=False)
+    notes = db.Column(db.String, nullable=False)
 
     user = db.relationship('User', backref='mindfulnesss')
 
-    def __init__(self, user_id, name, type, duration):
-        self.user_id = user_id
-        self.name = name
-        self.type = type
-        self.duration = duration
+    # def __init__(self, user_id, name, type, duration, notes):
+    #     self.user_id = user_id
+    #     self.name = name
+    #     self.type = type
+    #     self.duration = duration
+    #     self.notes = notes
 
-    def to_dict(self):
-        return {
-            'id': self.id,
-            'user_id': self.user_id,
-            'name': self.name,
-            'type': self.type,
-            'duration': self.duration
-        }
+    # def to_dict(self):
+    #     return {
+    #         'id': self.id,
+    #         'user_id': self.user_id,
+    #         'name': self.name,
+    #         'type': self.type,
+    #         'duration': self.duration,
+    #         'notes': self.notes
+    #     }
 
     def __repr__(self):
         return f"<Mindfulness id={self.id} name={self.name}>"

@@ -8,9 +8,11 @@ const UserCard = ({ user, deleteUser }) => {
 
   return (
     <div className="user-card">
-      <h2>Content</h2>
-      <p>Email: {user.email}</p>
-      <p>Location:</p>
+      <h2>Your Profile</h2>
+      <p>first_name: </p>
+      <p>last_name: </p>
+      <p>username: </p>
+      <p>: </p>
       <button onClick={deleteUser}>Delete User</button>
     </div>
   );

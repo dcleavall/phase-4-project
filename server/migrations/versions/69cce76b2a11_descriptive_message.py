@@ -1,8 +1,8 @@
 """<descriptive message>
 
-Revision ID: 7e015d6b5ced
+Revision ID: 69cce76b2a11
 Revises: 
-Create Date: 2023-06-20 18:09:06.126375
+Create Date: 2023-06-21 16:29:13.376975
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '7e015d6b5ced'
+revision = '69cce76b2a11'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -47,6 +47,7 @@ def upgrade():
     sa.Column('name', sa.String(), nullable=False),
     sa.Column('type', sa.String(), nullable=False),
     sa.Column('duration', sa.Integer(), nullable=False),
+    sa.Column('notes', sa.String(), nullable=False),
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], name=op.f('fk_mindfullness_user_id_users')),
     sa.PrimaryKeyConstraint('id')
     )
@@ -59,7 +60,7 @@ def upgrade():
     sa.Column('fat', sa.Integer(), nullable=False),
     sa.Column('carbs', sa.Integer(), nullable=False),
     sa.Column('macros', sa.Integer(), nullable=False),
-    sa.Column('goals', sa.Integer(), nullable=False),
+    sa.Column('goals', sa.String(), nullable=False),
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], name=op.f('fk_nutrition_user_id_users')),
     sa.PrimaryKeyConstraint('id')
     )

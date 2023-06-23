@@ -90,9 +90,9 @@ if __name__ == '__main__':
         user_ids = []
 
         mindfulness_data = [
-            {'user_id': 1, 'type':'yoga', 'duration':25},
-            {'user_id': 2, 'type': 'meditation', 'duration':20},
-            {'user_id': 3, 'type': 'other', 'duration': 30}
+            {'user_id': 1, 'type':'yoga', 'duration':25, 'notes': 'sample notes'},
+            {'user_id': 2, 'type': 'meditation', 'duration':20, 'notes': 'sample notes'},
+            {'user_id': 3, 'type': 'other', 'duration': 30, 'notes': 'sample notes'}
 
         ]
 
@@ -101,7 +101,8 @@ if __name__ == '__main__':
                 user_id=data['user_id'],
                 name='',
                 type=data['type'],
-                duration=data['duration']
+                duration=data['duration'],
+                notes=data['notes']
             )
             db.session.add(mindfulness)
         
