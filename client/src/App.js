@@ -1,120 +1,29 @@
-import React, { useState, useEffect } from "react";
-import { BrowserRouter as Router, Switch, Route, Redirect, Link, useHistory, useLocation } from "react-router-dom";
+import { useContext } from "react";
+import { BrowserRouter as Router, Switch, Route, Redirect, Link, useLocation } from "react-router-dom";
+import { useHistory } from "react-router-dom";
+
+
 
 // Import components
+import { AuthContext } from "./components/UserContext";
 import Signup from "./components/Signup";
 import Login from "./components/Login";
 import Home from "./components/Home";
 import UserCard from "./components/UserCard";
-import "./App.css";
+
 
 function App() {
-  const history = useHistory();
+
   const location = useLocation();
-  const [loggedIn, setLoggedIn] = useState(false);
-  const [user, setUser] = useState();
+  const history = useHistory();
+  const { loggedIn, user, handleLogin, handleLogout, deleteUser } = useContext(AuthContext);
+  
 
-  useEffect(() => {
-    
-    const fetchUser = () => {
-      fetch("/authorized")
-        .then((response) => {
-          if (response.ok) {
-            return response.json();
-          } else {
-            console.log("Unexpected response:", response);
-            throw new Error("Authorization failed");
-          }
-        })
-        .then((data) => {
-          setLoggedIn(true);
-          setUser(data); // Set the user data in state, or null if not available
-        })
-        .catch((error) => {
-          console.error("Error:", error);
-          setLoggedIn(false);
-        });
-    };
-
-    fetchUser(); // Call fetchUser when the component mounts
-  }, []);
-
-  const handleLogin = (username, password) => {
-    fetch("/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ username, password }),
-    })
-      .then((response) => {
-        if (response.status === 401) {
-          throw new Error("Invalid login");
-        } else if (response.ok) {
-          return response.json();
-        } else {
-          throw new Error("Login failed");
-        }
-      })
-      .then((data) => {
-        console.log(data);
-        setLoggedIn(true);
-        setUser(data || {}); // Set the user data in state, or null if not available
-        history.push("/");
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-      });
-  };
-
-  const handleLogout = () => {
-    fetch("/logout", {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-      .then((response) => {
-        if (response.ok) {
-          setLoggedIn(false);
-          setUser(null); // Reset the user data
-          history.push("/login?auth=true");
-        } else {
-          throw new Error("Logout failed");
-        }
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-      });
-  };
-
-  const deleteUser = () => {
-    fetch('/delete-user', {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      // Include any necessary information to identify the user to be deleted
-      body: JSON.stringify({ user_id: user.user_id }), // Replace `user.user_id` with the correct property name
-    })
-      .then((response) => {
-        if (response.ok) {
-          setLoggedIn(false);
-          setUser(null);
-          history.push("/login?deleted=true");
-        } else {
-          throw new Error("Failed to delete user");
-        }
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-      });
-  };
 
   return (
     <Router>
       <div className="container">
-        {loggedIn && <button onClick={handleLogout}>Logout</button>}
+        {loggedIn && <button onClick={() => handleLogout(history)}>Logout</button>}
 
         <Switch>
           <Route exact path="/">
@@ -139,13 +48,13 @@ function App() {
             {loggedIn ? (
               <Redirect to="/" />
             ) : (
-              <Login onLogin={handleLogin} />
+              <Login onLogin={(username, password) => handleLogin(username, password, history)} />
             )}
           </Route>
 
           <Route path="/account">
             {loggedIn ? (
-              <UserCard user={user} deleteUser={deleteUser} />
+              <UserCard user={user} deleteUser={() => deleteUser(history)}  />
             ) : (
               <Redirect to="/login" />
             )}

@@ -320,32 +320,52 @@ const Home = ({ user }) => {
 
   return (
     <div className="home">
-
-    <div className="account-button-container">
-            <Link to="/account" className="account-button">
-              Account
-            </Link>
-          </div>
-      <h1>Live a Healthier and gain Rewards!</h1>
+      <nav className="flex justify-between items-center bg-gray-800 p-6">
+        <div>
+          <Link to="/" className="text-xl font-bold text-white">Logo</Link>
+        </div>
+        <div>
+          <ul className="flex space-x-4">
+            <li>
+              <Link to="/dashboard" className="text-white hover:text-gray-300">Dashboard</Link>
+            </li>
+            <li>
+              <Link to="/calender" className="text-white hover:text-gray-300">Calender</Link>
+            </li>
+            <li>
+              <Link to="/about" className="text-white hover:text-gray-300">About</Link>
+            </li>
+            <li> 
+            <Link to="/account" className="text-white hover:text-gray-300">Account</Link>
+            </li>
+          </ul>
+        </div>
+      </nav>
+      <h1 className="text-3xl font-bold mb-4 mb-4 text-center">Live a Healthier and gain Rewards!</h1>
       {user !== null ? (
         <>
-
-          <h2>Healthy lifestyle choice:</h2>
-          <div className="health-choice-buttons">
+          <h2 className="text-xl font-semibold mb-4 text-center">Healthy lifestyle choice:</h2>
+          <div className="health-choice-buttons mb-4 text-center">
             <button
-              className={selectedHealthChoice === 'exercise' ? 'selected' : ''}
+              className={`${
+                selectedHealthChoice === 'exercise' ? 'selected' : ''
+              } rounded-lg py-2 px-4 mr-2`}
               onClick={() => handleHealthChoiceSelect('exercise')}
             >
               Exercise
             </button>
             <button
-              className={selectedHealthChoice === 'nutrition' ? 'selected' : ''}
+              className={`${
+                selectedHealthChoice === 'nutrition' ? 'selected' : ''
+              } rounded-lg py-2 px-4 mr-2`}
               onClick={() => handleHealthChoiceSelect('nutrition')}
             >
               Nutrition
             </button>
             <button
-              className={selectedHealthChoice === 'mindfulness' ? 'selected' : ''}
+              className={`${
+                selectedHealthChoice === 'mindfulness' ? 'selected' : ''
+              } rounded-lg py-2 px-4`}
               onClick={() => handleHealthChoiceSelect('mindfulness')}
             >
               Mindfulness
@@ -353,24 +373,32 @@ const Home = ({ user }) => {
           </div>
           {selectedHealthChoice && (
             <>
-              <p>You selected: {selectedHealthChoice}</p>
+              <p className="mt-4">You selected: {selectedHealthChoice}</p>
               <div className="exercise-form">
                 <button
                   onClick={() => setSelectedHealthChoice('weightlifting')}
-                  className={selectedHealthChoice === 'weightlifting' ? 'selected' : ''}
+                  className={`${
+                    selectedHealthChoice === 'weightlifting' ? 'selected' : ''
+                  } rounded-lg py-2 px-4 mr-2`}
                 >
                   Weightlifting
                 </button>
                 <button
                   onClick={() => setSelectedHealthChoice('cardio')}
-                  className={selectedHealthChoice === 'cardio' ? 'selected' : ''}
+                  className={`${
+                    selectedHealthChoice === 'cardio' ? 'selected' : ''
+                  } rounded-lg py-2 px-4`}
                 >
                   Cardio
                 </button>
                 {selectedHealthChoice === 'weightlifting' && (
-                  <form onSubmit={handleWeightliftingSubmit}>
+                  <form onSubmit={handleWeightliftingSubmit} className="mt-4">
                     <label htmlFor="muscleGroup">Muscle Group:</label>
-                    <select id="muscleGroup" name="muscleGroup">
+                    <select
+                      id="muscleGroup"
+                      name="muscleGroup"
+                      className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    >
                       <option value="chest">Chest</option>
                       <option value="back">Back</option>
                       <option value="legs">Legs</option>
@@ -378,76 +406,190 @@ const Home = ({ user }) => {
                       <option value="triceps">Triceps</option>
                       <option value="shoulders">Shoulders</option>
                     </select>
-                    <label htmlFor="duration">Duration:</label>
-                    <input type="text" id="duration" name="duration" />
-                    <label htmlFor="notes">Notes:</label>
-                    <input type="text" id="notes" name="notes" />
-                    <button type="submit">Submit Weightlifting</button>
+                    <label htmlFor="duration" className="mt-2">
+                      Duration:
+                    </label>
+                    <input
+                      type="text"
+                      id="duration"
+                      name="duration"
+                      className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    />
+                    <label htmlFor="notes" className="mt-2">
+                      Notes:
+                    </label>
+                    <input
+                      type="text"
+                      id="notes"
+                      name="notes"
+                      className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    />
+                    <button
+                      type="submit"
+                      className="mt-4 bg-indigo-500 text-white rounded-lg py-2 px-4"
+                    >
+                      Submit Weightlifting
+                    </button>
                   </form>
                 )}
                 {selectedHealthChoice === 'cardio' && (
-                  <form onSubmit={handleCardioSubmit}>
+                  <form onSubmit={handleCardioSubmit} className="mt-4">
                     <label htmlFor="duration">Duration:</label>
-                    <input type="text" id="duration" name="duration" />
-                    <label htmlFor="distance">Distance:</label>
-                    <input type="text" id="distance" name="distance" />
-                    <label htmlFor="notes">Notes:</label>
-                    <input type="text" id="notes" name="notes" />
-                    <button type="submit">Submit Cardio</button>
+                    <input
+                      type="text"
+                      id="duration"
+                      name="duration"
+                      className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    />
+                    <label htmlFor="distance" className="mt-2">
+                      Distance:
+                    </label>
+                    <input
+                      type="text"
+                      id="distance"
+                      name="distance"
+                      className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    />
+                    <label htmlFor="notes" className="mt-2">
+                      Notes:
+                    </label>
+                    <input
+                      type="text"
+                      id="notes"
+                      name="notes"
+                      className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    />
+                    <button
+                      type="submit"
+                      className="mt-4 bg-indigo-500 text-white rounded-lg py-2 px-4"
+                    >
+                      Submit Cardio
+                    </button>
                   </form>
                 )}
               </div>
               <div className="nutrition-form">
                 {selectedHealthChoice === 'nutrition' && (
-                  <form onSubmit={handleNutritionSubmit}>
+                  <form onSubmit={handleNutritionSubmit} className="mt-4">
                     <label htmlFor="meal">Meal:</label>
-                    <input type="text" id="meal" name="meal" />
-                    <label htmlFor="protein">Protein:</label>
-                    <input type="text" id="protein" name="protein" />
-                    <label htmlFor="fat">Fat:</label>
-                    <input type="text" id="fat" name="fat" />
-                    <label htmlFor="carbs">Carbs:</label>
-                    <input type="text" id="carbs" name="carbs" />
-                    <label htmlFor="macros">Macros:</label>
-                    <input type="text" id="macros" name="macros" />
-                    <label htmlFor="goals">Goals:</label>
-                    <input type="text" id="goals" name="goals" />
-                    <button type="submit">Submit Nutrition</button>
+                    <input
+                      type="text"
+                      id="meal"
+                      name="meal"
+                      className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    />
+                    <label htmlFor="protein" className="mt-2">
+                      Protein:
+                    </label>
+                    <input
+                      type="text"
+                      id="protein"
+                      name="protein"
+                      className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    />
+                    <label htmlFor="fat" className="mt-2">
+                      Fat:
+                    </label>
+                    <input
+                      type="text"
+                      id="fat"
+                      name="fat"
+                      className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    />
+                    <label htmlFor="carbs" className="mt-2">
+                      Carbs:
+                    </label>
+                    <input
+                      type="text"
+                      id="carbs"
+                      name="carbs"
+                      className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    />
+                    <label htmlFor="macros" className="mt-2">
+                      Macros:
+                    </label>
+                    <input
+                      type="text"
+                      id="macros"
+                      name="macros"
+                      className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    />
+                    <label htmlFor="goals" className="mt-2">
+                      Goals:
+                    </label>
+                    <input
+                      type="text"
+                      id="goals"
+                      name="goals"
+                      className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    />
+                    <button
+                      type="submit"
+                      className="mt-4 bg-indigo-500 text-white rounded-lg py-2 px-4"
+                    >
+                      Submit Nutrition
+                    </button>
                   </form>
                 )}
               </div>
               <div className="mindfulness-form">
                 {selectedHealthChoice === 'mindfulness' && (
-                  <form onSubmit={handleMindfulnessSubmit}>
+                  <form onSubmit={handleMindfulnessSubmit} className="mt-4">
                     <label htmlFor="type">Activity type:</label>
-                    <input type="text" id="type" name="type" />
-                    <label htmlFor="duration">Duration:</label>
-                    <input type="text" id="duration" name="duration" />
-                    <label htmlFor="notes">Notes:</label>
-                    <input type="text" id="notes" name="notes" />
-                    <button type="submit">Submit Mindfulness</button>
+                    <input
+                      type="text"
+                      id="type"
+                      name="type"
+                      className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    />
+                    <label htmlFor="duration" className="mt-2">
+                      Duration:
+                    </label>
+                    <input
+                      type="text"
+                      id="duration"
+                      name="duration"
+                      className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    />
+                    <label htmlFor="notes" className="mt-2">
+                      Notes:
+                    </label>
+                    <input
+                      type="text"
+                      id="notes"
+                      name="notes"
+                      className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    />
+                    <button
+                      type="submit"
+                      className="mt-4 bg-indigo-500 text-white rounded-lg py-2 px-4"
+                    >
+                      Submit Mindfulness
+                    </button>
                   </form>
                 )}
               </div>
 
-
               {exerciseData.length > 0 && (
-                <div className="submitted-exercise-data">
-                  <h4>Exercise Data:</h4>
+                <div className="submitted-exercise-data mt-4">
+                  <h4 className="font-bold">Exercise Data:</h4>
                   {exerciseData.map((exercise) => (
-                    <div key={exercise.id}>
-                      <p>Type: {exercise.type}</p>
+                    <div key={exercise.id} className="exercise-entry">
+                      <p>Muscle Group: {exercise.muscleGroup}</p>
                       <p>Duration: {exercise.duration}</p>
-                      {exercise.type === 'weightlifting' && (
-                        <p>Muscle Group: {exercise.muscle_group}</p>
-                      )}
-                      {exercise.type === 'cardio' && (
-                        <p>Distance: {exercise.distance}</p>
-                      )}
                       <p>Notes: {exercise.notes}</p>
-                      <button onClick = {handleDelete}>Delete</button>
-                      <button onClick = {handleEdit}>Edit</button> 
-                      <hr />
+                      <button
+                        onClick={handleEdit}
+                        className="text-indigo-500 mr-2"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={handleDelete}
+                        className="text-red-500"
+                      >
+                        Delete
+                      </button>
                     </div>
                   ))}
                 </div>
@@ -456,7 +598,7 @@ const Home = ({ user }) => {
           )}
         </>
       ) : (
-        <p>Loading user data...</p>
+        <p>Please log in to access this feature.</p>
       )}
     </div>
   );

@@ -1,4 +1,9 @@
-.container {
+/* @tailwind base;
+@tailwind components;
+@tailwind utilities; */
+
+
+/* .container {
   max-width: 400px;
   margin: 0 auto;
   padding: 20px;
@@ -117,7 +122,7 @@ button[type='submit']:hover {
 
 .submitted-exercise-data button {
   margin-right: 5px;
-}
+} */
 
   
   

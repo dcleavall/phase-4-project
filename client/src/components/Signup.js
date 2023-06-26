@@ -58,68 +58,115 @@ function Signup() {
   });
 
   return (
-    <div className="container">
-      <h1>Signup</h1>
-      {error && <p className="error">Error: {error}</p>}
-      {user && <p>User: {JSON.stringify(user)}</p>}
-      <form onSubmit={formik.handleSubmit}>
-        <div className="form-group">
-          <label>Username</label>
-          <input
-            type="text"
-            name="username"
-            value={formik.values.username}
-            onChange={formik.handleChange}
-          />
+    <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
+      <div className="sm:mx-auto sm:w-full sm:max-w-sm">
+        <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
+          Signup
+        </h2>
+        {error && <p className="mt-4 text-center text-red-600">Error: {error}</p>}
+        {user && <p className="mt-4 text-center">User: {JSON.stringify(user)}</p>}
+      </div>
+
+      <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
+        <form onSubmit={formik.handleSubmit} className="space-y-6">
+          <div>
+            <label htmlFor="username" className="block text-sm font-medium leading-6 text-gray-900">
+              Username
+            </label>
+            <div className="mt-2">
+              <input
+                id="username"
+                name="username"
+                type="text"
+                value={formik.values.username}
+                onChange={formik.handleChange}
+                className="block w-full rounded-md border-gray-300 shadow-sm px-3 py-2 placeholder-gray-400 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
+              Email
+            </label>
+            <div className="mt-2">
+              <input
+                id="email"
+                name="email"
+                type="email"
+                value={formik.values.email}
+                onChange={formik.handleChange}
+                className="block w-full rounded-md border-gray-300 shadow-sm px-3 py-2 placeholder-gray-400 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label htmlFor="password" className="block text-sm font-medium leading-6 text-gray-900">
+              Password
+            </label>
+            <div className="mt-2">
+              <input
+                id="password"
+                name="password"
+                type="password"
+                value={formik.values.password}
+                onChange={formik.handleChange}
+                className="block w-full rounded-md border-gray-300 shadow-sm px-3 py-2 placeholder-gray-400 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label htmlFor="firstName" className="block text-sm font-medium leading-6 text-gray-900">
+              First Name
+            </label>
+            <div className="mt-2">
+              <input
+                id="firstName"
+                name="firstName"
+                type="text"
+                value={formik.values.firstName}
+                onChange={formik.handleChange}
+                className="block w-full rounded-md border-gray-300 shadow-sm px-3 py-2 placeholder-gray-400 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label htmlFor="lastName" className="block text-sm font-medium leading-6 text-gray-900">
+              Last Name
+            </label>
+            <div className="mt-2">
+              <input
+                id="lastName"
+                name="lastName"
+                type="text"
+                value={formik.values.lastName}
+                onChange={formik.handleChange}
+                className="block w-full rounded-md border-gray-300 shadow-sm px-3 py-2 placeholder-gray-400 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              />
+            </div>
+          </div>
+
+          {user === null && !formik.isSubmitting && (
+            <button type="submit" className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+              Submit
+            </button>
+          )}
+        </form>
+
+        <div className="mt-4 text-center">
+          {user === null && (
+            <Link to="/login" className="font-medium text-indigo-600 hover:text-indigo-500">
+              Return to Login
+            </Link>
+          )}
         </div>
-        <div className="form-group">
-          <label>Email</label>
-          <input
-            type="email"
-            name="email"
-            value={formik.values.email}
-            onChange={formik.handleChange}
-          />
-        </div>
-        <div className="form-group">
-          <label>Password</label>
-          <input
-            type="password"
-            name="password"
-            value={formik.values.password}
-            onChange={formik.handleChange}
-          />
-        </div>
-        <div className="form-group">
-          <label>First Name</label>
-          <input
-            type="text"
-            name="firstName"
-            value={formik.values.firstName}
-            onChange={formik.handleChange}
-          />
-        </div>
-        <div className="form-group">
-          <label>Last Name</label>
-          <input
-            type="text"
-            name="lastName"
-            value={formik.values.lastName}
-            onChange={formik.handleChange}
-          />
-        </div>
-        {user === null && !formik.isSubmitting && (
-          <button type="submit">Submit</button>
-        )}
-      </form>
-      <div className="return-link">
-        {user === null && (
-          <Link to="/login">Return to Login</Link>
-        )}
       </div>
     </div>
   );
-}
+};
 
 export default Signup;
 
