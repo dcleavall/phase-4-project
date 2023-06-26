@@ -10,24 +10,25 @@ import Signup from "./components/Signup";
 import Login from "./components/Login";
 import Home from "./components/Home";
 import UserCard from "./components/UserCard";
+import About from "./components/About";
 
 
 function App() {
 
   const location = useLocation();
   const history = useHistory();
-  const { loggedIn, user, handleLogin, handleLogout, deleteUser } = useContext(AuthContext);
+  const { user, handleLogin, handleLogout, deleteUser } = useContext(AuthContext);
   
-
+  if(user === undefined) return <p>Loading...</p>
 
   return (
     <Router>
       <div className="container">
-        {loggedIn && <button onClick={() => handleLogout(history)}>Logout</button>}
+        {user && <button onClick={() => handleLogout(history)}>Logout</button>}
 
         <Switch>
           <Route exact path="/">
-            {loggedIn ? (
+            {user ? (
               <>
                 <Home user={user} />
               </>
@@ -37,7 +38,7 @@ function App() {
           </Route>
 
           <Route path="/signup">
-            {loggedIn ? (
+            {user ? (
               <Redirect to="/" />
             ) : (
               <Signup />
@@ -45,7 +46,7 @@ function App() {
           </Route>
 
           <Route path="/login">
-            {loggedIn ? (
+            {user ? (
               <Redirect to="/" />
             ) : (
               <Login onLogin={(username, password) => handleLogin(username, password, history)} />
@@ -53,15 +54,23 @@ function App() {
           </Route>
 
           <Route path="/account">
-            {loggedIn ? (
-              <UserCard user={user} deleteUser={() => deleteUser(history)}  />
+            {user ? (
+              <UserCard user={user} deleteUser={() => deleteUser(history)} />
+            ) : (
+              <Redirect to="/login" />
+            )}
+          </Route>
+
+          <Route path="/about">
+            {user ? (
+              <About user={user}/>
             ) : (
               <Redirect to="/login" />
             )}
           </Route>
         </Switch>
 
-        {!loggedIn && location.pathname === "/login" && (
+        {!user && location.pathname === "/login" && (
           <div className="signup-link">
             <Link to="/signup" className="signup-button">Signup</Link>
           </div>

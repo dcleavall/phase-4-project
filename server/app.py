@@ -92,7 +92,7 @@ class AuthorizationSession(Resource):
                 # Serialize the session logs
                 serialized_session_logs = [session_log.to_dict() for session_log in session_logs]
 
-                return serialized_session_logs, 200
+                return user.to_dict(), 200
 
         abort(401, "Unauthorized")
 

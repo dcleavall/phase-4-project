@@ -1,11 +1,15 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { Link } from 'react-router-dom';
+import { AuthContext } from "./UserContext";
 
-const Home = ({ user }) => {
+const Home = () => {
+  const { user } = useContext(AuthContext);
   const [selectedHealthChoice, setSelectedHealthChoice] = useState('');
   const [exerciseData, setExerciseData] = useState([]);
   const [nutritionData, setNutritionData] = useState([]);
   const [mindfulnessData, setMindfulnessData] = useState([]);
+
+
 
   useEffect(() => {
     fetch('/exercises')

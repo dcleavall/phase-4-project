@@ -4,32 +4,31 @@ import { useHistory } from "react-router-dom";
 const AuthContext = createContext();
 
 const UserProvider = ({ children }) => {
-  const [loggedIn, setLoggedIn] = useState(false);
   const [user, setUser] = useState();
   const history = useHistory();
 
+
   useEffect(() => {
-    const fetchUser = () => {
       fetch("/authorized")
         .then((response) => {
           if (response.ok) {
             return response.json();
           } else {
             console.log("Unexpected response:", response);
+            setUser(null)
             throw new Error("Authorization failed");
           }
         })
         .then((data) => {
-          setLoggedIn(true);
+         
           setUser(data);
         })
         .catch((error) => {
           console.error("Error:", error);
-          setLoggedIn(false);
+    
         });
-    };
 
-    fetchUser();
+
   }, []);
 
   const handleLogin = (username, password) => {
@@ -46,13 +45,14 @@ const UserProvider = ({ children }) => {
         } else if (response.ok) {
           return response.json();
         } else {
+            setUser(null)
           throw new Error("Login failed");
         }
       })
       .then((data) => {
         console.log(data);
-        setLoggedIn(true);
-        setUser(data || {});
+       
+        setUser(data);
         history.push("/");
       })
       .catch((error) => {
@@ -69,7 +69,7 @@ const UserProvider = ({ children }) => {
     })
       .then((response) => {
         if (response.ok) {
-          setLoggedIn(false);
+    
           setUser(null);
           history.push("/login?auth=true");
         } else {
@@ -91,7 +91,7 @@ const UserProvider = ({ children }) => {
     })
       .then((response) => {
         if (response.ok) {
-          setLoggedIn(false);
+    
           setUser(null);
           history.push("/login?deleted=true");
         } else {
@@ -106,7 +106,6 @@ const UserProvider = ({ children }) => {
   return (
     <AuthContext.Provider
       value={{
-        loggedIn,
         user,
         handleLogin,
         handleLogout,
