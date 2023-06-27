@@ -11,6 +11,8 @@ import Login from "./components/Login";
 import Home from "./components/Home";
 import UserCard from "./components/UserCard";
 import About from "./components/About";
+import Dashboard from "./components/Dashboard";
+import Blog from "./components/Blog";
 
 
 function App() {
@@ -64,6 +66,22 @@ function App() {
           <Route path="/about">
             {user ? (
               <About user={user}/>
+            ) : (
+              <Redirect to="/login" />
+            )}
+          </Route>
+
+          <Route path="/dashboard">
+            {user ? (
+              <Dashboard user={user}/>
+            ) : (
+              <Redirect to="/login" />
+            )}
+          </Route>
+
+          <Route path="/blog">
+            {user ? (
+              <Blog user={user}/>
             ) : (
               <Redirect to="/login" />
             )}
