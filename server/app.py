@@ -211,6 +211,9 @@ class ExerciseID(Resource):
 
         exercise_data = request.get_json()
 
+        if not exercise_data:
+            return {'message': 'Invalid exercise data'}, 400
+
         updated_exercise_data = {
             'user_id': user_id,
             'type': exercise_data.get('type', exercise.type),
@@ -226,9 +229,14 @@ class ExerciseID(Resource):
         exercise.distance = updated_exercise_data['distance']
         exercise.notes = updated_exercise_data['notes']
 
-        db.session.commit()
+        try:
+            db.session.commit()
+            return {'message': 'Exercise updated successfully'}, 200
+        except Exception as e:
+            db.session.rollback()
+            return {'message': 'Error updating exercise data: {}'.format(str(e))}, 500
 
-        return {'message': 'Exercise updated successfully'}, 200
+
 
 class Nutritions(Resource):
     def get(self):

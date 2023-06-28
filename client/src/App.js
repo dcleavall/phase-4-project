@@ -12,7 +12,7 @@ import Home from "./components/Home";
 import UserCard from "./components/UserCard";
 import About from "./components/About";
 import Dashboard from "./components/Dashboard";
-import Blog from "./components/Blog";
+import Noteboard from "./components/Noteboard";
 
 
 function App() {
@@ -79,9 +79,9 @@ function App() {
             )}
           </Route>
 
-          <Route path="/blog">
+          <Route path="/noteboard">
             {user ? (
-              <Blog user={user}/>
+              <Noteboard user={user}/>
             ) : (
               <Redirect to="/login" />
             )}

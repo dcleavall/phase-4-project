@@ -174,10 +174,9 @@ const Home = () => {
       });
   };
 
-  const handleEdit = () => {
+  const handleEdit = (exerciseData) => {
     const updatedExerciseData = {
-      // Update the exercise properties based on the changes made by the user
-      user_id: user.user_id,
+      user_id: exerciseData.user_id,
       type: exerciseData.type,
       muscle_group: exerciseData.muscle_group,
       duration: exerciseData.duration,
@@ -196,21 +195,26 @@ const Home = () => {
         if (response.ok) {
           // Handle successful update
           console.log('Exercise data updated successfully');
-          // Fetch updated exercise data
-          response.json().then((data) => {
-            setExerciseData(exerciseData => exerciseData.map(e => {
-              return e.id !== data.id ? e : data;
-            }))})
+          // Fetch updated exercise data if needed
+          return fetch('/exercises').then((response) => response.json());
         } else {
           // Handle error response
           throw new Error('Exercise data update failed');
         }
+      })
+      .then((data) => {
+        setExerciseData(data);
       })
       .catch((error) => {
         // Handle error
         console.error('Error updating exercise data:', error);
       });
   };
+  
+  
+  
+  
+  
 
   // useEffect(() => {
   //   fetch('/nutrition')
@@ -334,7 +338,7 @@ const Home = () => {
               <Link to="/dashboard" className="text-white hover:text-gray-300">Dashboard</Link>
             </li>
             <li>
-              <Link to="/blog" className="text-white hover:text-gray-300">Blog</Link>
+              <Link to="/noteboard" className="text-white hover:text-gray-300">Noteboard</Link>
             </li>
             <li>
               <Link to="/about" className="text-white hover:text-gray-300">About</Link>
