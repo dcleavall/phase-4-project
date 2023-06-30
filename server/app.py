@@ -145,69 +145,87 @@ class DeleteUser(Resource):
         abort(401, "Unauthorized")
 
 
-
-
-
-class ExerciseID(Resource):
+class Exercises(Resource):
     def get(self):
         user_id = session.get('user_id')
+        user = User.query.filter_by(id=user_id).first()
 
-        if not user_id:
+        if not user:
             return {'message': 'Unauthorized'}, 401
 
-        exercises = Exercise.query.filter_by(user_id=user_id).all()
-        exercise_list = [exercise.to_dict() for exercise in exercises]
-
-        return exercise_list, 200
+        return [e.to_dict() for e in user.exercises], 200
 
     def post(self):
         user_id = session.get('user_id')
+        user = User.query.filter_by(id=user_id).first()
 
-        if not user_id:
+        if not user:
             return {'message': 'Unauthorized'}, 401
 
         exercise_data = request.get_json()
-        exercise = Exercise(
-            user_id=user_id,
-            name='',
-            type=exercise_data['type'],
-            muscle_group=exercise_data.get('muscle_group') if exercise_data['type'] == 'weightlifting' else None,
-            duration=exercise_data['duration'],
-            distance=exercise_data.get('distance') if exercise_data['type'] == 'cardio' else None,
-            notes=exercise_data['notes']
-        )
+        exercise_type = exercise_data.get('type')
 
-        db.session.add(exercise)
-        db.session.commit()
+        try:
+            exercise = Exercise(
+                user_id=user_id,
+                name='',
+                type=exercise_type,
+                muscle_group=exercise_data.get('muscle_group') if exercise_type == 'weightlifting' else None,
+                duration=exercise_data['duration'],
+                distance=exercise_data.get('distance') if exercise_type == 'cardio' else None,
+                notes=exercise_data['notes']
+            )
+
+            db.session.add(exercise)
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
+            return {'message': 'Error updating exercise data: {}'.format(str(e))}, 500
 
         return {'message': 'Exercise data submitted successfully'}, 201
 
-    def delete(self):
-        user_id = session.get('user_id')
 
-        if not user_id:
+class ExerciseID(Resource):
+    def get(self, id):
+        user_id = session.get('user_id')
+        user = User.query.filter_by(id=user_id).first()
+
+        if not user:
             return {'message': 'Unauthorized'}, 401
 
-        exercise = Exercise.query.filter_by(user_id=user_id).first()
+        exercise = Exercise.query.filter_by(id=id).first()
 
         if not exercise:
             return {'message': 'Exercise not found'}, 404
+
+        return exercise.to_dict(), 200
+
+    def delete(self, id):
+        user_id = session.get('user_id')
+        user = User.query.filter_by(id=user_id).first()
+        exercise = Exercise.query.filter_by(id=id).first()
+
+        if not exercise:
+            return {'message': 'Exercise not found'}, 404
+
+        if not user or exercise.user_id != user_id:
+            return {'message': 'Unauthorized'}, 401
 
         db.session.delete(exercise)
         db.session.commit()
 
         return {'message': 'Exercise deleted successfully'}, 200
 
-    def patch(self):
+    def patch(self, id):
         user_id = session.get('user_id')
-
-        if not user_id:
-            return {'message': 'Unauthorized'}, 401
-
-        exercise = Exercise.query.filter_by(user_id=user_id).first()
+        user = User.query.filter_by(id=user_id).first()
+        exercise = Exercise.query.filter_by(id=id).first()
 
         if not exercise:
             return {'message': 'Exercise not found'}, 404
+
+        if not user or exercise.user_id != user_id:
+            return {'message': 'Unauthorized'}, 401
 
         exercise_data = request.get_json()
 
@@ -215,7 +233,6 @@ class ExerciseID(Resource):
             return {'message': 'Invalid exercise data'}, 400
 
         updated_exercise_data = {
-            'user_id': user_id,
             'type': exercise_data.get('type', exercise.type),
             'muscle_group': exercise_data.get('muscle_group', exercise.muscle_group),
             'duration': exercise_data.get('duration', exercise.duration),
@@ -234,45 +251,79 @@ class ExerciseID(Resource):
             return {'message': 'Exercise updated successfully'}, 200
         except Exception as e:
             db.session.rollback()
-            return {'message': 'Error updating exercise data: {}'.format(str(e))}, 500
+            return {'message': 'Error updating exercise data: {}'.format(str(e))}, 422
+
+
 
 
 
 class Nutritions(Resource):
     def get(self):
         user_id = session.get('user_id')
+        user = User.query.filter_by(id=user_id).first()
 
-        if not user_id:
+        if not user:
             return {'message': 'Unauthorized'}, 401
 
-        nutritions = Nutrition.query.filter_by(user_id=user_id).all()
-        nutrition_list = [nutrition.to_dict() for nutrition in nutrition]
-
-        return nutrition_list, 200
+        return [n.to_dict() for n in user.nutritions], 200
 
     def post(self):
         user_id = session.get('user_id')
+        user = User.query.filter_by(id=user_id).first()
 
-        if not user_id:
+        if not user:
             return {'message': 'Unauthorized'}, 401
 
         nutrition_data = request.get_json()
-        nutrition = Nutrition(
-            user_id=user_id,
-            name='',
-            meal=nutrition_data.get('meal'),
-            protein=nutrition_data.get('protein'),
-            fat=nutrition_data.get('fat'),
-            carbs=nutrition_data.get('carbs'),
-            macros=nutrition_data.get('macros'),
-            goals=nutrition_data.get('goals')
-        )
 
-        db.session.add(nutrition)
-        db.session.commit()
-        
+        try:
+            nutrition = Nutrition(
+                user_id=user_id,
+                name='',
+                meal=nutrition_data.get('meal'),
+                protein=nutrition_data.get('protein'),
+                fat=nutrition_data.get('fats'),  # Update 'fat' to 'fats'
+                carbs=nutrition_data.get('carbs'),
+                macros=nutrition_data.get('macros'),
+                goals=nutrition_data.get('goals')
+            )
+
+            db.session.add(nutrition)
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
+            return {'message': 'Error updating nutrition data: {}'.format(str(e))}, 500
 
         return {'message': 'Nutrition data submitted successfully'}, 201
+
+
+class NutritionID(Resource):
+    def get(self, id):
+        user_id = session.get('user_id')
+        user = User.query.filter_by(id=user_id).first()
+        nutrition = Nutrition.query.filter_by(id=id).first()
+
+        if not nutrition:
+            return {'message': 'Nutrition not found'}, 404
+
+        return nutrition.to_dict(), 200
+
+    def delete(self, id):
+        user_id = session.get('user_id')
+        user = User.query.filter_by(id=user_id).first()
+        nutrition = Nutrition.query.filter_by(id=id).first()
+
+        if not nutrition:
+            return {'message': 'Nutrition not found'}, 404
+
+        if not user or nutrition.user_id != user_id:
+            return {'message': 'Unauthorized'}, 401
+
+        db.session.delete(nutrition)
+        db.session.commit()
+
+        return {'message': 'Nutrition deleted successfully'}, 200
+    
     
     # def delete(self):
     #     user_id = session.get('user_id')
@@ -296,51 +347,65 @@ class Nutritions(Resource):
 class Mindfulnesss(Resource):
     def get(self):
         user_id = session.get('user_id')
+        user = User.query.filter_by(id=user_id).first()
 
-        if not user_id:
+        if not user:
             return {'message': 'Unauthorized'}, 401
 
-        mindfulnesss = Mindfulness.query.filter_by(user_id=user_id).all()
-        mindfulness_list = [mindfulness.to_dict() for mindfulness in mindfulness]
-
-        return mindfulness_list, 200
+        return [m.to_dict() for m in user.mindfulnesss], 200
 
     def post(self):
         user_id = session.get('user_id')
+        user = User.query.filter_by(id=user_id).first()
 
-        if not user_id:
+        if not user:
             return {'message': 'Unauthorized'}, 401
 
         mindfulness_data = request.get_json()
-        mindfulness = Mindfulness(
-            user_id=user_id,
-            name='',
-            type=mindfulness_data['type'],
-            duration=mindfulness_data['duration'],
-            notes=mindfulness_data['notes']
-        )
 
-        db.session.add(mindfulness)
-        db.session.commit()
+        try:
+            mindfulness = Mindfulness(
+                user_id=user_id,
+                name='',
+                type=mindfulness_data.get('type'),
+                duration=mindfulness_data.get('duration'),
+                notes=mindfulness_data.get('notes')
+            )
+
+            db.session.add(mindfulness)
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
+            return {'message': 'Error updating mindfulness data: {}'.format(str(e))}, 500
 
         return {'message': 'Mindfulness data submitted successfully'}, 201
-    
-#     def delete(self):
-#         user_id = session.get('user_id')
 
-#         if not user_id:
-#             return {'message': 'Unauthorized'}, 401
+class MindfulnessID(Resource):
+    def get(self, id):
+        user_id = session.get('user_id')
+        user = User.query.filter_by(id=user_id).first()
+        mindfulness = Mindfulness.query.filter_by(id=id).first()
 
-#         mindfulness = Mindfulness.query.filter_by(user_id=user_id).first()
+        if not mindfulness:
+            return {'message': 'Mindfulness not found'}, 404
 
-#         if not mindfulness:
-#             return {'message': 'Nutrition not found'}, 404
+        return mindfulness.to_dict(), 200
 
-#         db.session.delete(mindfulness)
-#         db.session.commit()
+    def delete(self, id):
+        user_id = session.get('user_id')
+        user = User.query.filter_by(id=user_id).first()
+        mindfulness = Mindfulness.query.filter_by(id=id).first()
 
-#     def patch(self):
-#         pass
+        if not mindfulness:
+            return {'message': 'Mindfulness not found'}, 404
+
+        if not user or mindfulness.user_id != user_id:
+            return {'message': 'Unauthorized'}, 401
+
+        db.session.delete(mindfulness)
+        db.session.commit()
+
+        return {'message': 'Mindfulness deleted successfully'}, 200
 
 
 
@@ -353,9 +418,12 @@ api.add_resource(Login, '/login')
 api.add_resource(AuthorizationSession, '/authorized')
 api.add_resource(Logout, '/logout')
 api.add_resource(DeleteUser, '/delete-user')
-api.add_resource(ExerciseID, '/exercises')
+api.add_resource(ExerciseID, '/exercises/<int:id>')
+api.add_resource(Exercises, '/exercises')
 api.add_resource(Nutritions, '/nutrition')
+api.add_resource(NutritionID, '/nutrition/<int:id>')
 api.add_resource(Mindfulnesss, '/mindfulness')
+api.add_resource(MindfulnessID, '/mindfulness/<int:id>')
 
 if __name__ == '__main__':
     app.run(port=5555, debug=True) 

@@ -13,6 +13,9 @@ import UserCard from "./components/UserCard";
 import About from "./components/About";
 import Dashboard from "./components/Dashboard";
 import Noteboard from "./components/Noteboard";
+import Exercise from "./components/Exercise";
+import Nutrition from "./components/Nutrition";
+import Mindfulness from "./components/Mindfulness";
 
 
 function App() {
@@ -82,6 +85,29 @@ function App() {
           <Route path="/noteboard">
             {user ? (
               <Noteboard user={user}/>
+            ) : (
+              <Redirect to="/login" />
+            )}
+          </Route>
+
+          <Route path="/exercises">
+            {user ? (
+              <Exercise user={user}/>
+            ) : (
+              <Redirect to="/login" />
+            )}
+          </Route>
+
+          <Route path="/nutrition">
+            {user ? (
+              <Nutrition user={user}/>
+            ) : (
+              <Redirect to="/login" />
+            )}
+          </Route>
+          <Route path="/mindfulness">
+            {user ? (
+              <Mindfulness user={user}/>
             ) : (
               <Redirect to="/login" />
             )}

@@ -2,3 +2,5 @@
 @tailwind components;
 @tailwind utilities;
 
+@import '~bootstrap/dist/css/bootstrap.css';
+
