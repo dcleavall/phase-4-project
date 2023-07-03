@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
+import { Button, Modal } from 'react-bootstrap';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 const Mindfulness = ({ handleToggleMindfulness }) => {
   const [mindfulnessData, setMindfulnessData] = useState([]);
+  const [selectedMindfulness, setSelectedMindfulness] = useState(null);
+  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
     fetch('/mindfulness')
@@ -64,45 +68,55 @@ const Mindfulness = ({ handleToggleMindfulness }) => {
             }
           })
           .then((data) => {
-            console.log('Mindfulness Data:', data);
-
-            const updatedMindfulnessData = { ...mindfulnessData, id: data.id };
-
-            setMindfulnessData((prevData) => [...prevData, updatedMindfulnessData]);
-
-            fetch('/mindfulness')
-              .then((response) => {
-                if (response.ok) {
-                  return response.json();
-                } else {
-                  throw new Error('Mindfulness data retrieval failed');
-                }
-              })
-              .then((data) => {
-                setMindfulnessData(data);
-              })
-              .catch((error) => {
-                console.error('Error:', error);
-              });
-
-            resetForm();
-
-            handleToggleMindfulness();
+            setMindfulnessData(data);
           })
-
           .catch((error) => {
             console.error('Error:', error);
           });
+
+        resetForm();
+      })
+      .catch((error) => {
+        console.error('Error:', error);
       });
   };
 
+  const handlePatchSubmit = (values, mindfulnessId, { resetForm }) => {
+    const mindfulData = {
+      type: values.type,
+      duration: values.duration,
+      notes: values.notes,
+    };
+  
+    fetch(`/mindfulness/${mindfulnessId}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(mindfulData),
+    })
+      .then((response) => {
+        if (response.ok) {
+          console.log('Mindfulness data updated successfully');
+          // Update the mindfulness entry in the state
+          setMindfulnessData((prevData) =>
+            prevData.map((mindfulness) =>
+              mindfulness.id === mindfulnessId ? { ...mindfulness, ...mindfulData } : mindfulness
+            )
+          );
+          resetForm();
+          handleToggleMindfulness();
+        } else {
+          throw new Error('Mindfulness data update failed');
+        }
+      })
+      .catch((error) => {
+        console.error('Error updating mindfulness data:', error);
+      });
+  };
+  
+
   const handleDelete = (mindfulnessId) => {
-    const confirmDelete = window.confirm('Are you sure you want to delete this mindfulness entry?');
-
-    if (!confirmDelete) {
-      return;
-    }
-
     fetch(`/mindfulness/${mindfulnessId}`, {
       method: 'DELETE',
     })
@@ -119,79 +133,87 @@ const Mindfulness = ({ handleToggleMindfulness }) => {
       })
       .catch((error) => {
         console.error('Error deleting mindfulness data:', error);
-        // If an error occurs during deletion, revert the state update to maintain consistency
-        setMindfulnessData((prevData) => prevData);
       });
+  };
+
+  const handleEdit = (mindfulness) => {
+    setSelectedMindfulness(mindfulness);
+    setShowModal(true);
   };
 
   return (
     <div>
       <Formik
         initialValues={{
-          technique: '',
+          type: '',
           duration: '',
-          description: '',
+          notes: '',
         }}
         validationSchema={mindfulnessSchema}
-        onSubmit={handlePostSubmit}
+        onSubmit={(values, { resetForm }) => {
+          if (selectedMindfulness) {
+            handlePatchSubmit(values, selectedMindfulness.id, { resetForm });
+          } else {
+            handlePostSubmit(values, { resetForm });
+          }
+        }}
       >
-        <Form>
-          {/* Form fields */}
-          <div className="mb-4">
-            <label htmlFor="type" className="block mb-1 font-medium text-gray-700">
-              Type:
-            </label>
-            <Field
-              type="text"
-              name="type"
-              id="type"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md"
-            />
-            <ErrorMessage name="type" component="div" className="text-red-500" />
-          </div>
+        {({ resetForm }) => (
+          <Form>
+            {/* Form fields */}
+            <div className="mb-4">
+              <label htmlFor="type" className="block mb-1 font-medium text-gray-700">
+                Type:
+              </label>
+              <Field
+                type="text"
+                name="type"
+                id="type"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md"
+              />
+              <ErrorMessage name="type" component="div" className="text-red-500" />
+            </div>
 
-          <div className="mb-4">
-            <label htmlFor="duration" className="block mb-1 font-medium text-gray-700">
-              Duration:
-            </label>
-            <Field
-              type="text"
-              name="duration"
-              id="duration"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md"
-            />
-            <ErrorMessage name="duration" component="div" className="text-red-500" />
-          </div>
+            <div className="mb-4">
+              <label htmlFor="duration" className="block mb-1 font-medium text-gray-700">
+                Duration:
+              </label>
+              <Field
+                type="text"
+                name="duration"
+                id="duration"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md"
+              />
+              <ErrorMessage name="duration" component="div" className="text-red-500" />
+            </div>
 
-          <div className="mb-4">
-            <label htmlFor="notes" className="block mb-1 font-medium text-gray-700">
-              Notes:
-            </label>
-            <Field
-              type="text"
-              name="notes"
-              id="notes"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md"
-            />
-            <ErrorMessage name="notes" component="div" className="text-red-500" />
-          </div>
+            <div className="mb-4">
+              <label htmlFor="notes" className="block mb-1 font-medium text-gray-700">
+                Notes:
+              </label>
+              <Field
+                type="text"
+                name="notes"
+                id="notes"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md"
+              />
+              <ErrorMessage name="notes" component="div" className="text-red-500" />
+            </div>
 
-          <div className="mb-4">
-            <button
-              type="submit"
-              className="bg-indigo-500 text-white py-2 px-4 rounded-lg hover:bg-indigo-600"
-            >
-              Post
-            </button>
-            <button
-              type="button"
-              onClick={handleToggleMindfulness}
-              className="bg-gray-300 text-gray-700 py-2 px-4 ml-2 rounded-lg hover:bg-gray-400"
-            >
-              Cancel
-            </button>
-          </div>
-        </Form>
+            <div className="mb-4">
+              <Button variant="primary" type="submit">
+                {selectedMindfulness ? 'Update' : 'Post'}
+              </Button>
+              <Button variant="secondary" onClick={() => {
+                resetForm();
+                setSelectedMindfulness(null);
+                setShowModal(false);
+              }}>
+                Cancel
+              </Button>
+            </div>
+          </Form>
+        )}
       </Formik>
 
       {/* Render mindfulness data */}
@@ -210,6 +232,9 @@ const Mindfulness = ({ handleToggleMindfulness }) => {
                 >
                   Delete
                 </button>
+                <Button variant="info" onClick={() => handleEdit(mindfulness)}>
+                  Edit
+                </Button>
               </li>
             ))}
           </ul>
@@ -217,8 +242,90 @@ const Mindfulness = ({ handleToggleMindfulness }) => {
           <p>No mindfulness data available.</p>
         )}
       </div>
+
+      {/* Modal */}
+      <Modal show={showModal} onHide={() => setShowModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Edit Mindfulness</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Formik
+            initialValues={{
+              type: selectedMindfulness ? selectedMindfulness.type : '',
+              duration: selectedMindfulness ? selectedMindfulness.duration : '',
+              notes: selectedMindfulness ? selectedMindfulness.notes : '',
+            }}
+            validationSchema={mindfulnessSchema}
+            onSubmit={(values, { resetForm }) => {
+              handlePatchSubmit(values, selectedMindfulness.id, { resetForm });
+            }}
+          >
+            {({ resetForm }) => (
+              <Form>
+                {/* Form fields */}
+                <div className="mb-4">
+                  <label htmlFor="type" className="block mb-1 font-medium text-gray-700">
+                    Type:
+                  </label>
+                  <Field
+                    type="text"
+                    name="type"
+                    id="type"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                  />
+                  <ErrorMessage name="type" component="div" className="text-red-500" />
+                </div>
+
+                <div className="mb-4">
+                  <label htmlFor="duration" className="block mb-1 font-medium text-gray-700">
+                    Duration:
+                  </label>
+                  <Field
+                    type="text"
+                    name="duration"
+                    id="duration"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                  />
+                  <ErrorMessage name="duration" component="div" className="text-red-500" />
+                </div>
+
+                <div className="mb-4">
+                  <label htmlFor="notes" className="block mb-1 font-medium text-gray-700">
+                    Notes:
+                  </label>
+                  <Field
+                    type="text"
+                    name="notes"
+                    id="notes"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                  />
+                  <ErrorMessage name="notes" component="div" className="text-red-500" />
+                </div>
+
+                <div className="mb-4">
+                  <Button variant="primary" type="submit">
+                    Update
+                  </Button>
+                  <Button variant="secondary" onClick={() => {
+                    resetForm();
+                    setSelectedMindfulness(null);
+                    setShowModal(false);
+                  }}>
+                    Cancel
+                  </Button>
+                </div>
+              </Form>
+            )}
+          </Formik>
+        </Modal.Body>
+      </Modal>
     </div>
   );
 };
 
 export default Mindfulness;
+
+
+
+
+

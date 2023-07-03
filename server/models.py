@@ -142,7 +142,7 @@ class Nutrition(db.Model, SerializerMixin):
         return f"<Nutrition id={self.id} name={self.name}>"
 
 class Mindfulness(db.Model, SerializerMixin):
-    __tablename__ = 'mindfullness'
+    __tablename__ = 'mindfulness'
 
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))

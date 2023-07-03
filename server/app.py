@@ -407,6 +407,34 @@ class MindfulnessID(Resource):
 
         return {'message': 'Mindfulness deleted successfully'}, 200
 
+    def patch(self, id):
+        user_id = session.get('user_id')
+        user = User.query.filter_by(id=user_id).first()
+        mindfulness = Mindfulness.query.get(id)
+
+        if not mindfulness:
+            return {'message': 'Mindfulness not found'}, 404
+
+        if not user or mindfulness.user_id != user_id:
+            return {'message': 'Unauthorized'}, 401
+
+        mindfulness_data = request.get_json()
+        
+        if not mindfulness_data:
+            return {'message': 'Invalid data'}, 400
+
+        # Update the mindfulness entry with the new data
+        mindfulness.type = mindfulness_data.get('type', mindfulness.type)
+        mindfulness.duration = mindfulness_data.get('duration', mindfulness.duration)
+        mindfulness.notes = mindfulness_data.get('notes', mindfulness.notes)
+
+        db.session.commit()
+
+        return {'message': 'Mindfulness updated successfully'}, 200
+
+
+            
+
 
 
 

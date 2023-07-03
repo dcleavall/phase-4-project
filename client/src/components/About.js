@@ -13,12 +13,12 @@ const About = ({ user }) => {
           <div className="w-full lg:w-7/12">
             <div className="bg-white rounded-t text-white flex flex-row" style={{ backgroundColor: "#000", height: "200px" }}>
               <div className="ms-4 mt-5 flex flex-col" style={{ width: "150px" }}>
-                <img
+                {/* <img
                   src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-profiles/avatar-1.webp"
                   alt="Generic placeholder image"
                   className="img-fluid img-thumbnail mt-4 mb-2 w-48"
                   style={{ zIndex: "1" }}
-                />
+                /> */}
                 <button type="button" className="btn btn-outline-dark" data-mdb-ripple-color="dark" style={{ zIndex: "1" }}>
                   Edit profile
                 </button>
