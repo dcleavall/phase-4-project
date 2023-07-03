@@ -282,7 +282,7 @@ class Nutritions(Resource):
                 name='',
                 meal=nutrition_data.get('meal'),
                 protein=nutrition_data.get('protein'),
-                fat=nutrition_data.get('fats'),  # Update 'fat' to 'fats'
+                fat=nutrition_data.get('fat'),  # Update 'fat' to 'fats'
                 carbs=nutrition_data.get('carbs'),
                 macros=nutrition_data.get('macros'),
                 goals=nutrition_data.get('goals')
@@ -323,25 +323,35 @@ class NutritionID(Resource):
         db.session.commit()
 
         return {'message': 'Nutrition deleted successfully'}, 200
-    
-    
-    # def delete(self):
-    #     user_id = session.get('user_id')
 
-    #     if not user_id:
-    #         return {'message': 'Unauthorized'}, 401
+    def patch(self, id):
+        user_id = session.get('user_id')
+        user = User.query.filter_by(id=user_id).first()
+        nutrition = Nutrition.query.get(id)
 
-    #     nutrition = Nutrition.query.filter_by(user_id=user_id).first()
+        if not nutrition:
+            return {'message': 'Nutrition not found'}, 404
 
-    #     if not nutrition:
-    #         return {'message': 'Nutrition not found'}, 404
+        if not user or nutrition.user_id != user_id:
+            return {'message': 'Unauthorized'}, 401
 
-    #     db.session.delete(nutrition)
-    #     db.session.commit()
+        nutrition_data = request.get_json()
+        
+        if not nutrition_data:
+            return {'message': 'Invalid data'}, 400
 
+        # Update the mindfulness entry with the new data
+        nutrition.meal = nutrition_data.get('meal', nutrition.meal)
+        nutrition.protein = nutrition_data.get('duration', nutrition.protein)
+        nutrition.carbs = nutrition_data.get('carbs', nutrition.carbs)
+        nutrition.fat = nutrition_data.get('fat', nutrition.fat)
+        nutrition.macros = nutrition_data.get('macros', nutrition.macros)
+        nutrition.goals = nutrition_data.get('goals', nutrition.goals)
 
-#     def patch(self):
-#         pass
+        db.session.commit()
+
+        return {'message': 'Nutrition updated successfully'}, 200
+
 
 
 class Mindfulnesss(Resource):
