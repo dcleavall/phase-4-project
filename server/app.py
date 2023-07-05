@@ -236,10 +236,19 @@ class ExerciseID(Resource):
         exercise.type = exercise_data.get('type', exercise.type)
         exercise.muscle_group = exercise_data.get('muscle_group', exercise.muscle_group)
         exercise.duration = exercise_data.get('duration', exercise.duration)
-        exercise.distance = exercise_data.get('distance', exercise.distance)
+
+        distance = exercise_data.get('distance')
+        if distance == '':
+            distance = None
+        exercise.distance = distance
+
         exercise.notes = exercise_data.get('notes', exercise.notes)
 
-        db.session.commit()
+        try:
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
+            return {'message': 'Error updating exercise data: {}'.format(str(e))}, 500
 
         return {'message': 'Exercise updated successfully'}, 200
 
