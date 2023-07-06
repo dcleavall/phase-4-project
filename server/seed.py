@@ -8,7 +8,7 @@ from faker import Faker
 from flask_migrate import Migrate
 
 from config import app, db
-from models import User, Nutrition, Exercise, SessionLog, Mindfulness
+from models import User, Nutrition, Exercise, SessionLog, Mindfulness, ProjectRequirement
 # from sqlalchemy.ext.associationproxy import association_proxy 
 
 faker = Faker()

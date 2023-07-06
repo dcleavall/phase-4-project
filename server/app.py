@@ -145,6 +145,7 @@ class DeleteUser(Resource):
         abort(401, "Unauthorized")
 
 
+
 class Exercises(Resource):
     def get(self):
         user_id = session.get('user_id')

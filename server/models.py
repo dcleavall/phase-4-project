@@ -98,6 +98,22 @@ class User(db.Model, SerializerMixin):
     def __repr__(self):
         return f"<User {self.username}>"
 
+# class ProjectRequirement(db.Model, SerializerMixin):
+#     __tablename__ = 'project_requirements'
+
+#     id = db.Column(db.Integer, primary_key=True)
+#     requirement = db.Column(db.String(255), nullable=False)
+#     crossed_off = db.Column(db.Boolean, default=False)
+
+#     user = db.relationship('User', backref='project_requirements')
+
+#     def to_dict(self):
+#         return {
+#             "id": self.id,
+#             "requirement": self.requirement,
+#             "crossed_off": self.crossed_off
+#         }
+
 
 class Nutrition(db.Model, SerializerMixin):
     __tablename__ = 'nutrition'

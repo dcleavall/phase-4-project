@@ -196,7 +196,7 @@ const Exercise = ({ handleToggleExercise }) => {
             notes: '',
           }}
           validationSchema={exerciseSchema}
-          onSubmit={handlePostSubmit}
+          onSubmit={ handlePostSubmit }
         >
           <Form>
             {selectedHealthChoice === 'weightlifting' && (
