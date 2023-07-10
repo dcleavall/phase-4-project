@@ -71,7 +71,7 @@ const UserProvider = ({ children }) => {
         if (response.ok) {
     
           setUser(null);
-          history.push("/login?auth=true");
+          // history.push("/login?auth=true");
         } else {
           throw new Error("Logout failed");
         }
