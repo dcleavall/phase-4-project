@@ -114,7 +114,7 @@ function App() {
 
         {!user && location.pathname === "/login" && (
           <div className="signup-link">
-            <Link to="/signup" className="signup-button">Signup</Link>
+            <Link to="/signup" className="signup-button"></Link>
           </div>
         )}
       </div>
