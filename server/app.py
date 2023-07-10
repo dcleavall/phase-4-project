@@ -144,6 +144,33 @@ class DeleteUser(Resource):
 
         abort(401, "Unauthorized")
 
+class PatchUser(Resource):
+    def patch(self):
+        if 'user_id' in session and session['loggedIn']:
+            user_id = session['user_id']
+            user = User.query.filter_by(id=user_id).first()
+
+            if user:
+                user_data = request.get_json()
+
+                if not user_data:
+                    return {'message': 'Invalid user data'}, 400
+
+                user.username = user_data.get('username', user.username)
+                user.email = user_data.get('email', user.email)
+                user.first_name = user_data.get('first_name', user.first_name)
+                user.last_name = user_data.get('last_name', user.last_name)
+
+                try:
+                    db.session.commit()
+                except Exception as e:
+                    db.session.rollback()
+                    return {'message': 'Error updating user data: {}'.format(str(e))}, 500
+
+                return {'message': 'User updated successfully'}, 200
+
+        abort(401, "Unauthorized")
+
 
 
 class Exercises(Resource):
@@ -457,6 +484,7 @@ api.add_resource(Login, '/login')
 api.add_resource(AuthorizationSession, '/authorized')
 api.add_resource(Logout, '/logout')
 api.add_resource(DeleteUser, '/delete-user')
+api.add_resource(PatchUser, '/patch-user')
 api.add_resource(ExerciseID, '/exercises/<int:id>')
 api.add_resource(Exercises, '/exercises')
 api.add_resource(Nutritions, '/nutrition')

@@ -22,7 +22,7 @@ function App() {
 
   const location = useLocation();
   const history = useHistory();
-  const { user, handleLogin, handleLogout, deleteUser } = useContext(AuthContext);
+  const { user, handleLogin, handleLogout, deleteUser, updateUser } = useContext(AuthContext);
   
   if(user === undefined) return <p>Loading...</p>
 
@@ -58,7 +58,7 @@ function App() {
 
           <Route path="/account">
             {user ? (
-              <UserCard user={user} deleteUser={() => deleteUser(history)} handleLogout={() => handleLogout(history)}/>
+              <UserCard user={user} deleteUser={() => deleteUser(history)} handleLogout={() => handleLogout(history)} updateUser={() => updateUser(history)}/>
             ) : (
               <Redirect to="/login" />
             )}

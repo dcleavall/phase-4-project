@@ -1,15 +1,20 @@
-import { useState } from "react";
+import React, { useState, useContext } from "react";
 import { useHistory } from "react-router-dom";
 import { ChevronLeftIcon } from '@heroicons/react/outline';
 import { Modal, Button } from "react-bootstrap";
 
 import { AuthContext } from "./UserContext";
-import React, { useContext } from "react";
 
 const UserCard = () => {
   const history = useHistory();
-  const { user, handleLogout, deleteUser } = useContext(AuthContext);
+  const { user, handleLogout, deleteUser, updateUser } = useContext(AuthContext);
   const [showModal, setShowModal] = useState(false);
+  const [formData, setFormData] = useState({
+    firstName: user.first_name,
+    lastName: user.last_name,
+    username: user.username,
+    email: user.email,
+  });
 
   const redirectToHomePage = () => {
     history.push("/");
@@ -23,9 +28,19 @@ const UserCard = () => {
     setShowModal(false);
   };
 
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
+
   const handleSaveChanges = () => {
-    // Handle saving changes in the form
-    // Add your logic here
+    // Call updateUser function to save the changes
+    updateUser(formData);
+
+    // Close the modal
+    handleCloseModal();
   };
 
   if (!user) {
@@ -87,8 +102,48 @@ const UserCard = () => {
           <Modal.Title>Edit Profile</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          {/* Add your form fields and logic here */}
-          <p>Modal content goes here...</p>
+          <form>
+            <div className="mb-4">
+              <label className="block text-white font-semibold mb-2">First Name</label>
+              <input
+                type="text"
+                name="firstName"
+                value={formData.firstName}
+                onChange={handleChange}
+                className="rounded-lg px-4 py-2 w-full"
+              />
+            </div>
+            <div className="mb-4">
+              <label className="block text-white font-semibold mb-2">Last Name</label>
+              <input
+                type="text"
+                name="lastName"
+                value={formData.lastName}
+                onChange={handleChange}
+                className="rounded-lg px-4 py-2 w-full"
+              />
+            </div>
+            <div className="mb-4">
+              <label className="block text-white font-semibold mb-2">Username</label>
+              <input
+                type="text"
+                name="username"
+                value={formData.username}
+                onChange={handleChange}
+                className="rounded-lg px-4py-2 w-full"
+              />
+            </div>
+            <div className="mb-4">
+              <label className="block text-white font-semibold mb-2">Email</label>
+              <input
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                className="rounded-lg px-4 py-2 w-full"
+              />
+            </div>
+          </form>
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleCloseModal}>

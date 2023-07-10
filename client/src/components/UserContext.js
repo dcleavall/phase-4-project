@@ -103,6 +103,29 @@ const UserProvider = ({ children }) => {
       });
   };
 
+  const updateUser = (updatedData) => {
+    fetch("/patch-user", {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(updatedData),
+    })
+      .then((response) => {
+        if (response.ok) {
+          // Handle the success case if necessary
+          console.log("User updated successfully");
+        } else {
+          throw new Error("Failed to update user");
+        }
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  };
+  
+
+
 
   return (
     <AuthContext.Provider
@@ -111,6 +134,7 @@ const UserProvider = ({ children }) => {
         handleLogin,
         handleLogout,
         deleteUser,
+        updateUser
       }}
     >
       {children}
