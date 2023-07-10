@@ -38,7 +38,7 @@ const Home = () => {
             </li>
             <li>
               <Link to="/noteboard" className="text-white hover:text-gray-300">
-                Noteboard
+                To Do List
               </Link>
             </li>
             <li>
@@ -55,12 +55,12 @@ const Home = () => {
         </div>
       </nav>
       <h1 className="text-3xl font-bold mb-4 text-center">
-        Live a Healthier and Gain Rewards!
+        Health Log
       </h1>
       <div className="flex justify-center">
         <div className="w-1/2">
           <h2 className="text-xl font-semibold mb-4 text-center">
-            Healthy Lifestyle Choice:
+            Track your health here!
           </h2>
           <div className="health-choice-buttons flex justify-center mb-4">
             <button

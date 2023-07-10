@@ -29,8 +29,6 @@ function App() {
   return (
     <Router>
       <div className="container">
-        {user && <button onClick={() => handleLogout(history)}>Logout</button>}
-
         <Switch>
           <Route exact path="/">
             {user ? (
@@ -60,7 +58,7 @@ function App() {
 
           <Route path="/account">
             {user ? (
-              <UserCard user={user} deleteUser={() => deleteUser(history)} />
+              <UserCard user={user} deleteUser={() => deleteUser(history)} handleLogout={() => handleLogout(history)}/>
             ) : (
               <Redirect to="/login" />
             )}
@@ -68,7 +66,7 @@ function App() {
 
           <Route path="/about">
             {user ? (
-              <About user={user}/>
+              <About user={user} handleLogout={() => handleLogout(history)}/>
             ) : (
               <Redirect to="/login" />
             )}
@@ -76,7 +74,7 @@ function App() {
 
           <Route path="/dashboard">
             {user ? (
-              <Dashboard user={user}/>
+              <Dashboard user={user} />
             ) : (
               <Redirect to="/login" />
             )}
@@ -84,7 +82,7 @@ function App() {
 
           <Route path="/noteboard">
             {user ? (
-              <Noteboard user={user}/>
+              <Noteboard user={user} handleLogout={() => handleLogout(history)}/>
             ) : (
               <Redirect to="/login" />
             )}
