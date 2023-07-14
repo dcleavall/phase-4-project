@@ -8,14 +8,11 @@ from faker import Faker
 from flask_migrate import Migrate
 
 from config import app, db
-from models import User, Nutrition, Exercise, SessionLog, Mindfulness
-# from sqlalchemy.ext.associationproxy import association_proxy 
+from models import User, Nutrition, Exercise, SessionLog, Mindfulness, Dashboard  # Import the Dashboard model
 
 faker = Faker()
 
 if __name__ == '__main__':
-
-
     with app.app_context():
         print('Seeding...')
         db.create_all()
@@ -42,10 +39,9 @@ if __name__ == '__main__':
             db.session.add(session_log)
 
         # Seed the Nutrition class
-        user_ids = []
         nutrition_data = [
-            {'user_id': 1, 'meal': 'chicken salad', 'protein': 25, 'fat': 5, 'carbs':30,  'macros': 'sample macros', 'goals':'sample goals'},
-            {'user_id': 2, 'meal': 'peanut butter bagel', 'protein': 20,'fat': 30, 'carbs': 31, 'macros': 'sample', 'goals': 'sample goals'},
+            {'user_id': 1, 'meal': 'chicken salad', 'protein': 25, 'fat': 5, 'carbs': 30, 'macros': 'sample macros', 'goals': 'sample goals'},
+            {'user_id': 2, 'meal': 'peanut butter bagel', 'protein': 20, 'fat': 30, 'carbs': 31, 'macros': 'sample', 'goals': 'sample goals'},
             # Add more nutrition data as needed
         ]
 
@@ -64,8 +60,6 @@ if __name__ == '__main__':
 
         db.session.commit()
 
-
-        user_ids = []
         # Seed the Exercise class
         exercise_data = [
             {'user_id': 1, 'type': 'weightlifting', 'muscle_group': 'Chest', 'duration': 30, 'notes': 'Sample notes', 'distance': None},
@@ -87,44 +81,38 @@ if __name__ == '__main__':
 
         db.session.commit()
 
-        user_ids = []
-
-        mindfulness_data = [
-            {'user_id': 1, 'type':'yoga', 'duration':25, 'notes': 'sample notes'},
-            {'user_id': 2, 'type': 'meditation', 'duration':20, 'notes': 'sample notes'},
-            {'user_id': 3, 'type': 'other', 'duration': 30, 'notes': 'sample notes'}
-
+        # Seed the Dashboard class
+        dashboard_data = [
+            {'name': 'Sample Dashboard 1'},
+            {'name': 'Sample Dashboard 2'},
+            # Add more dashboard data as needed
         ]
 
-        for data in mindfulness_data:
-            mindfulness = Mindfulness(
-                user_id=data['user_id'],
-                name='',
-                type=data['type'],
-                duration=data['duration'],
-                notes=data['notes']
+        for data in dashboard_data:
+            dashboard = Dashboard(
+                name=data['name']
             )
-            db.session.add(mindfulness)
-        
+            db.session.add(dashboard)
+            db.session.commit()
+
+            # Seed the Mindfulness class
+            mindfulness_data = [
+                {'user_id': 1, 'dashboard_id': dashboard.id, 'name': 'Sample Mindfulness 1', 'type': 'yoga', 'duration': 25, 'notes': 'sample notes'},
+                {'user_id': 2, 'dashboard_id': dashboard.id, 'name': 'Sample Mindfulness 2', 'type': 'meditation', 'duration': 20, 'notes': 'sample notes'},
+                # Add more mindfulness data as needed
+            ]
+
+            for data in mindfulness_data:
+                mindfulness = Mindfulness(
+                    user_id=data['user_id'],
+                    dashboard_id=data['dashboard_id'],
+                    name=data['name'],
+                    type=data['type'],
+                    duration=data['duration'],
+                    notes=data['notes']
+                )
+                db.session.add(mindfulness)
+
         db.session.commit()
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        print('Seeding complete!')

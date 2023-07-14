@@ -146,32 +146,49 @@ class Mindfulness(db.Model, SerializerMixin):
 
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    dashboard_id = db.Column(db.Integer, db.ForeignKey('dashboard.id'))
     name = db.Column(db.String, nullable=False, default='')
     type = db.Column(db.String, nullable=False, default='')
     duration = db.Column(db.Integer, nullable=False)
     notes = db.Column(db.String, nullable=False)
 
     user = db.relationship('User', backref='mindfulnesss')
+    dashboard = db.relationship('Dashboard', backref='mindfulnesss')
 
-    # def __init__(self, user_id, name, type, duration, notes):
-    #     self.user_id = user_id
-    #     self.name = name
-    #     self.type = type
-    #     self.duration = duration
-    #     self.notes = notes
+    def __init__(self, user_id, dashboard_id, name, type, duration, notes):
+        self.user_id = user_id
+        self.dashboard_id = dashboard_id
+        self.name = name
+        self.type = type
+        self.duration = duration
+        self.notes = notes
 
-    # def to_dict(self):
-    #     return {
-    #         'id': self.id,
-    #         'user_id': self.user_id,
-    #         'name': self.name,
-    #         'type': self.type,
-    #         'duration': self.duration,
-    #         'notes': self.notes
-    #     }
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'user_id': self.user_id,
+            'dashboard_id': self.dashboard_id,
+            'name': self.name,
+            'type': self.type,
+            'duration': self.duration,
+            'notes': self.notes
+        }
 
     def __repr__(self):
         return f"<Mindfulness id={self.id} name={self.name}>"
+
+
+class Dashboard(db.Model):
+    __tablename__ = 'dashboard'
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String, nullable=False, default='')
+
+    def __init__(self, name):
+        self.name = name
+
+    def __repr__(self):
+        return f"<Dashboard id={self.id} name={self.name}>"
 
 
 
