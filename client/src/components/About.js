@@ -1,6 +1,5 @@
 import { useHistory } from "react-router-dom";
 import { ChevronLeftIcon } from '@heroicons/react/outline';
-
 import { AuthContext } from "./UserContext";
 import React, { useContext } from "react";
 
@@ -17,23 +16,24 @@ const About = () => {
   }
 
   return (
-    <section className="h-screen bg-gradient-to-r from-gray-800 to-gray-900 flex flex-col justify-center items-center">
-      <div className="card mt-10">
+    <section className="min-h-screen bg-gradient-to-r from-gray-800 to-gray-900 flex flex-col items-center overflow-y-auto">
       <div className="flex items-center">
-          <button
-            onClick={redirectToHomePage}
-            className="flex items-center text-navy mt-4 underline mr-4"
-          >
-            <ChevronLeftIcon className="w-4 h-4 mr-2" />
-            Home
-          </button>
-          <button
-            onClick={handleLogout}
-            className="flex items-center text-navy mt-4 underline mr-4"
-          >
-            Logout
-          </button>
-        </div>
+        <button
+          onClick={redirectToHomePage}
+          className="flex items-center text-white mt-4 underline mr-4"
+        >
+          <ChevronLeftIcon className="w-4 h-4 mr-2" />
+          Home
+        </button>
+        <button
+          onClick={handleLogout}
+          className="flex items-center text-white mt-4 underline mr-4"
+        >
+          Logout
+        </button>
+      </div>
+      <div className="card mt-10">
+        <h1 className="text-center">Meet the team</h1>
         <div className="container py-5 flex bg-gray-900 justify-center items-center flex-col">
           <div className="w-full lg:w-7/12 bg-gray-900 rounded-t text-white flex flex-col items-center shadow-lg">
             <div className="mt-5">
@@ -58,7 +58,6 @@ const About = () => {
       </div>
     </section>
   );
-  
 };
 
 export default About;

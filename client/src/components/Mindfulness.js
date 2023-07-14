@@ -3,6 +3,8 @@ import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import { Button, Modal } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { useDrag } from 'react-dnd';
+import { ItemTypes } from './ItemTypes';
 
 const Mindfulness = ({ handleToggleMindfulness }) => {
   const [mindfulnessData, setMindfulnessData] = useState([]);
@@ -33,53 +35,54 @@ const Mindfulness = ({ handleToggleMindfulness }) => {
   });
 
   const handlePostSubmit = (values, { resetForm }) => {
-    const mindfulData = {
-      type: values.type,
-      duration: values.duration,
-      notes: values.notes,
-    };
-
-    fetch('/mindfulness', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(mindfulData),
-    })
-      .then((response) => {
-        if (response.ok) {
-          console.log('Mindfulness data posted successfully');
-          return response.json();
-        } else {
-          throw new Error('Mindfulness data posting failed');
-        }
-      })
-      .then((data) => {
-        console.log('Mindfulness Data:', data);
-        resetForm();
-
-        // Retrieve the updated mindfulness data
-        fetch('/mindfulness')
-          .then((response) => {
-            if (response.ok) {
-              return response.json();
-            } else {
-              throw new Error('Mindfulness data retrieval failed');
-            }
-          })
-          .then((data) => {
-            setMindfulnessData(data);
-          })
-          .catch((error) => {
-            console.error('Error:', error);
-          });
-
-        resetForm();
-      })
-      .catch((error) => {
-        console.error('Error:', error);
-      });
+  const mindfulData = {
+    name: values.name,  // Add the name field
+    type: values.type,
+    duration: values.duration,
+    notes: values.notes,
   };
+
+  fetch('/mindfulness', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(mindfulData),
+  })
+    .then((response) => {
+      if (response.ok) {
+        console.log('Mindfulness data posted successfully');
+        return response.json();
+      } else {
+        throw new Error('Mindfulness data posting failed');
+      }
+    })
+    .then((data) => {
+      console.log('Mindfulness Data:', data);
+      resetForm();
+
+      // Retrieve the updated mindfulness data
+      fetch('/mindfulness')
+        .then((response) => {
+          if (response.ok) {
+            return response.json();
+          } else {
+            throw new Error('Mindfulness data retrieval failed');
+          }
+        })
+        .then((data) => {
+          setMindfulnessData(data);
+        })
+        .catch((error) => {
+          console.error('Error:', error);
+        });
+
+      resetForm();
+    })
+    .catch((error) => {
+      console.error('Error:', error);
+    });
+};
 
   const handlePatchSubmit = (values, mindfulnessId, { resetForm }) => {
     const mindfulData = {
@@ -87,7 +90,7 @@ const Mindfulness = ({ handleToggleMindfulness }) => {
       duration: values.duration,
       notes: values.notes,
     };
-  
+
     fetch(`/mindfulness/${mindfulnessId}`, {
       method: 'PATCH',
       headers: {
@@ -114,7 +117,6 @@ const Mindfulness = ({ handleToggleMindfulness }) => {
         console.error('Error updating mindfulness data:', error);
       });
   };
-  
 
   const handleDelete = (mindfulnessId) => {
     fetch(`/mindfulness/${mindfulnessId}`, {
@@ -139,6 +141,37 @@ const Mindfulness = ({ handleToggleMindfulness }) => {
   const handleEdit = (mindfulness) => {
     setSelectedMindfulness(mindfulness);
     setShowModal(true);
+  };
+
+  const MindfulnessItem = ({ mindfulness }) => {
+    const [{ isDragging }, dragRef] = useDrag(() => ({
+      type: ItemTypes.CARD,
+      item: { type: ItemTypes.CARD, mindfulness },
+      collect: (monitor) => ({
+        isDragging: monitor.isDragging(),
+      }),
+    }));
+  
+    const opacity = isDragging ? 0.5 : 1;
+  
+    return (
+      <li style={{ opacity }}>
+        <div ref={dragRef} style={{ cursor: 'move' }}>
+          <p>Type: {mindfulness.type}</p>
+          <p>Duration: {mindfulness.duration}</p>
+          <p>Notes: {mindfulness.notes}</p>
+        </div>
+        <button
+          className="bg-red-500 text-white py-1 px-2 mt-2 rounded-lg hover:bg-red-600"
+          onClick={() => handleDelete(mindfulness.id)}
+        >
+          Delete
+        </button>
+        <Button variant="info" onClick={() => handleEdit(mindfulness)}>
+          Edit
+        </Button>
+      </li>
+    );
   };
 
   return (
@@ -204,11 +237,14 @@ const Mindfulness = ({ handleToggleMindfulness }) => {
               <Button variant="primary" type="submit">
                 {selectedMindfulness ? 'Update' : 'Post'}
               </Button>
-              <Button variant="secondary" onClick={() => {
-                resetForm();
-                setSelectedMindfulness(null);
-                setShowModal(false);
-              }}>
+              <Button
+                variant="secondary"
+                onClick={() => {
+                  resetForm();
+                  setSelectedMindfulness(null);
+                  setShowModal(false);
+                }}
+              >
                 Cancel
               </Button>
             </div>
@@ -222,20 +258,7 @@ const Mindfulness = ({ handleToggleMindfulness }) => {
         {mindfulnessData.length > 0 ? (
           <ul>
             {mindfulnessData.map((mindfulness) => (
-              <li key={mindfulness.id}>
-                <p>Type: {mindfulness.type}</p>
-                <p>Duration: {mindfulness.duration}</p>
-                <p>Notes: {mindfulness.notes}</p>
-                <button
-                  className="bg-red-500 text-white py-1 px-2 mt-2 rounded-lg hover:bg-red-600"
-                  onClick={() => handleDelete(mindfulness.id)}
-                >
-                  Delete
-                </button>
-                <Button variant="info" onClick={() => handleEdit(mindfulness)}>
-                  Edit
-                </Button>
-              </li>
+              <MindfulnessItem mindfulness={mindfulness} key={mindfulness.id} />
             ))}
           </ul>
         ) : (
@@ -306,11 +329,14 @@ const Mindfulness = ({ handleToggleMindfulness }) => {
                   <Button variant="primary" type="submit">
                     Update
                   </Button>
-                  <Button variant="secondary" onClick={() => {
-                    resetForm();
-                    setSelectedMindfulness(null);
-                    setShowModal(false);
-                  }}>
+                  <Button
+                    variant="secondary"
+                    onClick={() => {
+                      resetForm();
+                      setSelectedMindfulness(null);
+                      setShowModal(false);
+                    }}
+                  >
                     Cancel
                   </Button>
                 </div>
@@ -324,8 +350,3 @@ const Mindfulness = ({ handleToggleMindfulness }) => {
 };
 
 export default Mindfulness;
-
-
-
-
-

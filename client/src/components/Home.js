@@ -3,11 +3,15 @@ import { Link } from 'react-router-dom';
 import Exercise from './Exercise';
 import Nutrition from './Nutrition';
 import Mindfulness from './Mindfulness';
+import Dashboard from './Dashboard';
+import { useDrop } from 'react-dnd';
+import { ItemTypes } from './ItemTypes';
 
 const Home = () => {
   const [showExercise, setShowExercise] = useState(false);
   const [showNutrition, setShowNutrition] = useState(false);
   const [showMindfulness, setShowMindfulness] = useState(false);
+  const [droppedMindfulness, setDroppedMindfulness] = useState(null);
 
   const handleToggleMindfulness = () => {
     setShowMindfulness(!showMindfulness);
@@ -21,6 +25,28 @@ const Home = () => {
     setShowExercise(!showExercise);
   };
 
+  const handleDrop = (item) => {
+    const { mindfulness } = item;
+    setDroppedMindfulness(mindfulness);
+  };
+
+  const [{ isOver }, drop] = useDrop(() => ({
+    accept: ItemTypes.CARD,
+    drop: (item) => {
+      handleDrop(item);
+    },
+    collect: (monitor) => ({
+      isOver: monitor.isOver(),
+    }),
+  }));
+
+  const dropzoneStyle = {
+    backgroundColor: isOver ? 'lightblue' : 'white',
+    border: '2px dashed gray',
+    padding: '20px',
+    textAlign: 'center',
+  };
+
   return (
     <div className="home">
       <nav className="flex justify-between items-center bg-gray-800 p-6">
@@ -31,11 +57,11 @@ const Home = () => {
         </div>
         <div>
           <ul className="flex space-x-4">
-            <li>
-              <Link to="/dashboard" className="text-white hover:text-gray-300">
-                Dashboard
-              </Link>
-            </li>
+          <div>
+                <Link to="/calender" className="text-white hover:text-gray-300">
+                  Calender
+                </Link>
+              </div>
             <li>
               <Link to="/noteboard" className="text-white hover:text-gray-300">
                 To Do List
@@ -54,14 +80,10 @@ const Home = () => {
           </ul>
         </div>
       </nav>
-      <h1 className="text-3xl font-bold mb-4 text-center">
-        Health Log
-      </h1>
+      <h1 className="text-3xl font-bold mb-4 text-center">Health Log</h1>
       <div className="flex justify-center">
         <div className="w-1/2">
-          <h2 className="text-xl font-semibold mb-4 text-center">
-            Track your health here!
-          </h2>
+          <h2 className="text-xl font-semibold mb-4 text-center">Track your health here!</h2>
           <div className="health-choice-buttons flex justify-center mb-4">
             <button
               className={`rounded-lg py-2 px-4 mr-2 bg-blue-500 hover:bg-blue-600 ${
@@ -73,7 +95,7 @@ const Home = () => {
             </button>
             <button
               className={`rounded-lg py-2 px-4 mr-2 bg-blue-500 hover:bg-blue-600 ${
-                showExercise ? 'bg-blue-600' : ''
+                showNutrition ? 'bg-blue-600' : ''
               }`}
               onClick={handleToggleNutrition}
             >
@@ -90,7 +112,19 @@ const Home = () => {
           </div>
           {showExercise && <Exercise key="exercise" handleToggleExercise={handleToggleExercise} />}
           {showNutrition && <Nutrition key="nutrition" handleToggleNutrition={handleToggleNutrition} />}
-          {showMindfulness && <Mindfulness key="mindfulness" handleToggleMindfulness={handleToggleMindfulness} />}
+          {showMindfulness && (
+            <div>
+              <Mindfulness
+                key="mindfulness"
+                handleToggleMindfulness={handleToggleMindfulness}
+                droppedMindfulness={droppedMindfulness}
+                handleDrop={handleDrop}
+              />
+            </div>
+          )}
+        </div>
+        <div className="w-1/2">
+          <Dashboard droppedMindfulness={droppedMindfulness} dropzoneStyle={dropzoneStyle}  drop={drop}/>
         </div>
       </div>
     </div>
@@ -98,29 +132,3 @@ const Home = () => {
 };
 
 export default Home;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

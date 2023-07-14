@@ -60,7 +60,7 @@ const UserProvider = ({ children }) => {
       });
   };
 
-  const handleLogout = (history) => {
+  const handleLogout = () => {
     fetch("/logout", {
       method: "DELETE",
       headers: {
