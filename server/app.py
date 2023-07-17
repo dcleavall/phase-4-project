@@ -2,7 +2,7 @@ from flask import Flask, make_response, jsonify, request, session, abort
 from flask_restful import Api, Resource
 from flask_cors import CORS
 from config import db, app, api
-from models import User, SessionLog, Exercise, Nutrition, Mindfulness
+from models import User, SessionLog, Exercise, Nutrition, Mindfulness, Dashboard
 from datetime import datetime
 import logging
 
@@ -400,11 +400,13 @@ class Mindfulnesss(Resource):
             return {'message': 'Unauthorized'}, 401
 
         mindfulness_data = request.get_json()
+        dashboard_id = mindfulness_data.get('dashboard_id')  # Get dashboard_id from the request data
 
         try:
             mindfulness = Mindfulness(
                 user_id=user_id,
-                name='',
+                dashboard_id=dashboard_id,  # Assign dashboard_id from the request data
+                name=mindfulness_data.get('name'),
                 type=mindfulness_data.get('type'),
                 duration=mindfulness_data.get('duration'),
                 notes=mindfulness_data.get('notes')
@@ -462,6 +464,7 @@ class MindfulnessID(Resource):
             return {'message': 'Invalid data'}, 400
 
         # Update the mindfulness entry with the new data
+        mindfulness.name= mindfulness_date.get('name', mindfulness.name)
         mindfulness.type = mindfulness_data.get('type', mindfulness.type)
         mindfulness.duration = mindfulness_data.get('duration', mindfulness.duration)
         mindfulness.notes = mindfulness_data.get('notes', mindfulness.notes)
@@ -471,7 +474,33 @@ class MindfulnessID(Resource):
         return {'message': 'Mindfulness updated successfully'}, 200
 
 
-            
+class Dashboards(Resource):
+    def get(self):
+        # Implement the GET method to retrieve all dashboards for the logged-in user
+        user_id = session.get('user_id')
+        dashboards = Dashboard.query.filter_by(user_id=user_id).all()
+        return [dashboard.to_dict() for dashboard in dashboards], 200
+
+    def post(self):
+        # Implement the POST method to add a new dashboard for the logged-in user
+        user_id = session.get('user_id')
+        data = request.get_json()
+
+        # Make sure the request data contains the required fields
+        if not data or not data.get('name'):
+            return {'message': 'Invalid dashboard data'}, 400
+
+        name = data.get('name')
+
+        # Create a new Dashboard instance and add it to the database
+        try:
+            dashboard = Dashboard(user_id=user_id, name=name)
+            db.session.add(dashboard)
+            db.session.commit()
+            return {'message': 'Dashboard created successfully'}, 201
+        except Exception as e:
+            db.session.rollback()
+            return {'message': f'Error creating dashboard: {str(e)}'}, 500       
 
 
 
@@ -491,6 +520,7 @@ api.add_resource(Nutritions, '/nutrition')
 api.add_resource(NutritionID, '/nutrition/<int:id>')
 api.add_resource(Mindfulnesss, '/mindfulness')
 api.add_resource(MindfulnessID, '/mindfulness/<int:id>')
+api.add_resource(Dashboards, '/dashboard')
 
 if __name__ == '__main__':
     app.run(port=5555, debug=True) 

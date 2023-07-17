@@ -9,19 +9,68 @@ const Dashboard = () => {
   const { user } = useContext(AuthContext);
   const history = useHistory();
 
+  const handleDrop = (item) => {
+    if (!user) {
+      console.error('User is not authenticated. Cannot add to dashboard.');
+      return;
+    }
+
+    // Retrieve the dropped mindfulness data
+    const { mindfulness } = item;
+    
+    // Make an API call to add the new dashboard entry to the backend using fetch
+    fetch('/dashboard', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        user_id: user.id,  // Pass the user ID to the backend
+        name: mindfulness.name, // Use the mindfulness name as the dashboard name
+      }),
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('Failed to add dashboard entry to the backend');
+        }
+        return response.json();
+      })
+      .then((data) => {
+        console.log('Dashboard entry added to the backend:', data);
+        // You can update the state or perform any additional actions if needed.
+        // For example, you might want to update the list of dashboards displayed in the frontend.
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+
+    // Update the state with the dropped mindfulness
+    setDroppedMindfulness(mindfulness);
+  };
+
+  // ... (existing code)
+
   useEffect(() => {
     if (!user) {
       // Fetch user data or handle the loading state here
+    } else {
+      // Fetch the dropped mindfulness data from the backend using fetch
+      fetch('/mindfulness')
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error('Failed to fetch dropped mindfulness data');
+          }
+          return response.json();
+        })
+        .then((data) => {
+          // Update the state with the dropped mindfulness data
+          setDroppedMindfulness(data);
+        })
+        .catch((error) => {
+          console.error(error);
+        });
     }
   }, [user]);
-
-  const handleDrop = (item) => {
-    // Retrieve the dropped mindfulness data
-    const { mindfulness } = item;
-    // Update the state with the dropped mindfulness
-    setDroppedMindfulness(mindfulness);
-    console.log(mindfulness);
-  };
 
 
   const [{ isOver }, drop] = useDrop(() => ({
@@ -55,6 +104,7 @@ const Dashboard = () => {
           {droppedMindfulness && (
             <div className="mt-4">
               <h2>Dropped Mindfulness:</h2>
+              <p>Name: {droppedMindfulness.name}</p>
               <p>Type: {droppedMindfulness.type}</p>
               <p>Duration: {droppedMindfulness.duration}</p>
               <p>Notes: {droppedMindfulness.notes}</p>

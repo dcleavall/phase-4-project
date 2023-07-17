@@ -58,8 +58,8 @@ const Home = () => {
         <div>
           <ul className="flex space-x-4">
           <div>
-                <Link to="/calender" className="text-white hover:text-gray-300">
-                  Calender
+                <Link to="/calendar" className="text-white hover:text-gray-300">
+                  Calendar
                 </Link>
               </div>
             <li>

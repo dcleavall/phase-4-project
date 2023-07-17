@@ -38,6 +38,8 @@ if __name__ == '__main__':
             session_log = SessionLog(user_id=user.id, user_data=user_data)
             db.session.add(session_log)
 
+        db.session.commit()
+
         # Seed the Nutrition class
         nutrition_data = [
             {'user_id': 1, 'meal': 'chicken salad', 'protein': 25, 'fat': 5, 'carbs': 30, 'macros': 'sample macros', 'goals': 'sample goals'},
@@ -83,35 +85,36 @@ if __name__ == '__main__':
 
         # Seed the Dashboard class
         dashboard_data = [
-            {'name': 'Sample Dashboard 1'},
-            {'name': 'Sample Dashboard 2'},
+            {'user_id': 1, 'name': 'Sample Dashboard 1'},
+            {'user_id': 2, 'name': 'Sample Dashboard 2'},
             # Add more dashboard data as needed
         ]
 
         for data in dashboard_data:
             dashboard = Dashboard(
+                # user_id=data['user_id'],
                 name=data['name']
-            )
-            db.session.add(dashboard)
-            db.session.commit()
-
-            # Seed the Mindfulness class
-            mindfulness_data = [
-                {'user_id': 1, 'dashboard_id': dashboard.id, 'name': 'Sample Mindfulness 1', 'type': 'yoga', 'duration': 25, 'notes': 'sample notes'},
-                {'user_id': 2, 'dashboard_id': dashboard.id, 'name': 'Sample Mindfulness 2', 'type': 'meditation', 'duration': 20, 'notes': 'sample notes'},
-                # Add more mindfulness data as needed
-            ]
-
-            for data in mindfulness_data:
-                mindfulness = Mindfulness(
-                    user_id=data['user_id'],
-                    dashboard_id=data['dashboard_id'],
-                    name=data['name'],
-                    type=data['type'],
-                    duration=data['duration'],
-                    notes=data['notes']
                 )
-                db.session.add(mindfulness)
+            db.session.add(dashboard)
+        db.session.commit()
+
+        # Seed the Mindfulness class
+        mindfulness_data = [
+            {'user_id': 1, 'dashboard_id': 1, 'name': 'Sample Mindfulness 1', 'type': 'yoga', 'duration': 25, 'notes': 'sample notes'},
+            {'user_id': 2, 'dashboard_id': 2, 'name': 'Sample Mindfulness 2', 'type': 'meditation', 'duration': 20, 'notes': 'sample notes'},
+            # Add more mindfulness data as needed
+        ]
+
+        for data in mindfulness_data:
+            mindfulness = Mindfulness(
+                user_id=data['user_id'],
+                dashboard_id=data['dashboard_id'],
+                name=data['name'],
+                type=data['type'],
+                duration=data['duration'],
+                notes=data['notes']
+            )
+            db.session.add(mindfulness)
 
         db.session.commit()
 

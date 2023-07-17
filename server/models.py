@@ -177,19 +177,19 @@ class Mindfulness(db.Model, SerializerMixin):
     def __repr__(self):
         return f"<Mindfulness id={self.id} name={self.name}>"
 
-
-class Dashboard(db.Model):
+class Dashboard(db.Model, SerializerMixin):
     __tablename__ = 'dashboard'
 
     id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     name = db.Column(db.String, nullable=False, default='')
 
-    def __init__(self, name):
+    def __init__(self, user_id, name):
+        self.user_id = user_id
         self.name = name
 
     def __repr__(self):
         return f"<Dashboard id={self.id} name={self.name}>"
-
 
 
 class Exercise(db.Model, SerializerMixin):

@@ -18,7 +18,7 @@ import Noteboard from "./components/Noteboard";
 import Exercise from "./components/Exercise";
 import Nutrition from "./components/Nutrition";
 import Mindfulness from "./components/Mindfulness";
-import CustomCalender from "./components/calender/Calender";
+import CustomCalendar from "./components/calendar/Calendar";
 
 
 function App() {
@@ -113,9 +113,9 @@ function App() {
                 <Redirect to="/login" />
               )}
             </Route>
-            <Route path="/calender">
+            <Route path="/calendar">
               {user ? (
-                <CustomCalender user={user}/>
+                <CustomCalendar user={user} handleLogout={handleLogout}/>
               ) : (
                 <Redirect to="/login" />
               )}

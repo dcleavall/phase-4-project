@@ -29,63 +29,65 @@ const Mindfulness = ({ handleToggleMindfulness }) => {
   }, []);
 
   const mindfulnessSchema = Yup.object().shape({
+    name: Yup.string().required('Name is required'),
     type: Yup.string().required('Type is required'),
     duration: Yup.number().required('Duration is required'),
     notes: Yup.string().required('Notes is required'),
   });
 
   const handlePostSubmit = (values, { resetForm }) => {
-  const mindfulData = {
-    name: values.name,  // Add the name field
-    type: values.type,
-    duration: values.duration,
-    notes: values.notes,
+    const mindfulData = {
+      name: values.name,
+      type: values.type,
+      duration: values.duration,
+      notes: values.notes,
+    };
+
+    fetch('/mindfulness', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(mindfulData),
+    })
+      .then((response) => {
+        if (response.ok) {
+          console.log('Mindfulness data posted successfully');
+          return response.json();
+        } else {
+          throw new Error('Mindfulness data posting failed');
+        }
+      })
+      .then((data) => {
+        console.log('Mindfulness Data:', data);
+        resetForm();
+
+        // Retrieve the updated mindfulness data
+        fetch('/mindfulness')
+          .then((response) => {
+            if (response.ok) {
+              return response.json();
+            } else {
+              throw new Error('Mindfulness data retrieval failed');
+            }
+          })
+          .then((data) => {
+            setMindfulnessData(data);
+          })
+          .catch((error) => {
+            console.error('Error:', error);
+          });
+
+        resetForm();
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+      });
   };
-
-  fetch('/mindfulness', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(mindfulData),
-  })
-    .then((response) => {
-      if (response.ok) {
-        console.log('Mindfulness data posted successfully');
-        return response.json();
-      } else {
-        throw new Error('Mindfulness data posting failed');
-      }
-    })
-    .then((data) => {
-      console.log('Mindfulness Data:', data);
-      resetForm();
-
-      // Retrieve the updated mindfulness data
-      fetch('/mindfulness')
-        .then((response) => {
-          if (response.ok) {
-            return response.json();
-          } else {
-            throw new Error('Mindfulness data retrieval failed');
-          }
-        })
-        .then((data) => {
-          setMindfulnessData(data);
-        })
-        .catch((error) => {
-          console.error('Error:', error);
-        });
-
-      resetForm();
-    })
-    .catch((error) => {
-      console.error('Error:', error);
-    });
-};
 
   const handlePatchSubmit = (values, mindfulnessId, { resetForm }) => {
     const mindfulData = {
+      name: values.name,
       type: values.type,
       duration: values.duration,
       notes: values.notes,
@@ -151,12 +153,13 @@ const Mindfulness = ({ handleToggleMindfulness }) => {
         isDragging: monitor.isDragging(),
       }),
     }));
-  
+
     const opacity = isDragging ? 0.5 : 1;
-  
+
     return (
       <li style={{ opacity }}>
         <div ref={dragRef} style={{ cursor: 'move' }}>
+          <p>Name: {mindfulness.name}</p>
           <p>Type: {mindfulness.type}</p>
           <p>Duration: {mindfulness.duration}</p>
           <p>Notes: {mindfulness.notes}</p>
@@ -178,6 +181,7 @@ const Mindfulness = ({ handleToggleMindfulness }) => {
     <div>
       <Formik
         initialValues={{
+          name: '',
           type: '',
           duration: '',
           notes: '',
@@ -194,6 +198,18 @@ const Mindfulness = ({ handleToggleMindfulness }) => {
         {({ resetForm }) => (
           <Form>
             {/* Form fields */}
+            <div className="mb-4">
+              <label htmlFor="name" className="block mb-1 font-medium text-gray-700">
+                Name:
+              </label>
+              <Field
+                type="text"
+                name="name"
+                id="name"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md"
+              />
+              <ErrorMessage name="name" component="div" className="text-red-500" />
+            </div>
             <div className="mb-4">
               <label htmlFor="type" className="block mb-1 font-medium text-gray-700">
                 Type:
@@ -274,6 +290,7 @@ const Mindfulness = ({ handleToggleMindfulness }) => {
         <Modal.Body>
           <Formik
             initialValues={{
+              name: selectedMindfulness ? selectedMindfulness.name : '',
               type: selectedMindfulness ? selectedMindfulness.type : '',
               duration: selectedMindfulness ? selectedMindfulness.duration : '',
               notes: selectedMindfulness ? selectedMindfulness.notes : '',
@@ -286,6 +303,18 @@ const Mindfulness = ({ handleToggleMindfulness }) => {
             {({ resetForm }) => (
               <Form>
                 {/* Form fields */}
+                <div className="mb-4">
+                  <label htmlFor="name" className="block mb-1 font-medium text-gray-700">
+                    Name:
+                  </label>
+                  <Field
+                    type="text"
+                    name="name"
+                    id="name"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                  />
+                  <ErrorMessage name="name" component="div" className="text-red-500" />
+                </div>
                 <div className="mb-4">
                   <label htmlFor="type" className="block mb-1 font-medium text-gray-700">
                     Type:
