@@ -17,7 +17,7 @@ const Dashboard = () => {
 
     // Retrieve the dropped mindfulness data
     const { mindfulness } = item;
-    
+
     // Make an API call to add the new dashboard entry to the backend using fetch
     fetch('/dashboard', {
       method: 'POST',
@@ -25,8 +25,11 @@ const Dashboard = () => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        user_id: user.id,  // Pass the user ID to the backend
+        user_id: user.id, // Pass the user ID to the backend
         name: mindfulness.name, // Use the mindfulness name as the dashboard name
+        type: mindfulness.type, // Add the mindfulness type
+        duration: mindfulness.duration, // Add the mindfulness duration
+        notes: mindfulness.notes, // Add the mindfulness notes
       }),
     })
       .then((response) => {
@@ -71,7 +74,6 @@ const Dashboard = () => {
         });
     }
   }, [user]);
-
 
   const [{ isOver }, drop] = useDrop(() => ({
     accept: ItemTypes.CARD,

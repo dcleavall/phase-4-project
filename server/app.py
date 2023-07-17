@@ -464,7 +464,7 @@ class MindfulnessID(Resource):
             return {'message': 'Invalid data'}, 400
 
         # Update the mindfulness entry with the new data
-        mindfulness.name= mindfulness_date.get('name', mindfulness.name)
+        mindfulness.name= mindfulness_data.get('name', mindfulness.name)
         mindfulness.type = mindfulness_data.get('type', mindfulness.type)
         mindfulness.duration = mindfulness_data.get('duration', mindfulness.duration)
         mindfulness.notes = mindfulness_data.get('notes', mindfulness.notes)
@@ -482,7 +482,7 @@ class Dashboards(Resource):
         return [dashboard.to_dict() for dashboard in dashboards], 200
 
     def post(self):
-        # Implement the POST method to add a new dashboard for the logged-in user
+        # Implement the POST method to add a new dashboard entry for the logged-in user
         user_id = session.get('user_id')
         data = request.get_json()
 
@@ -491,10 +491,19 @@ class Dashboards(Resource):
             return {'message': 'Invalid dashboard data'}, 400
 
         name = data.get('name')
+        dashboard_type = data.get('type')
+        duration = data.get('duration')
+        notes = data.get('notes')
 
         # Create a new Dashboard instance and add it to the database
         try:
-            dashboard = Dashboard(user_id=user_id, name=name)
+            dashboard = Dashboard(
+                user_id=user_id,
+                name=name,
+                type=dashboard_type,
+                duration=duration,
+                notes=notes
+            )
             db.session.add(dashboard)
             db.session.commit()
             return {'message': 'Dashboard created successfully'}, 201

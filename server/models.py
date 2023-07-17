@@ -153,7 +153,8 @@ class Mindfulness(db.Model, SerializerMixin):
     notes = db.Column(db.String, nullable=False)
 
     user = db.relationship('User', backref='mindfulnesss')
-    dashboard = db.relationship('Dashboard', backref='mindfulnesss')
+    # Use a different name for the backref in Mindfulness model
+    related_dashboard = db.relationship('Dashboard', backref='mindfulness_entries', foreign_keys=[dashboard_id])
 
     def __init__(self, user_id, dashboard_id, name, type, duration, notes):
         self.user_id = user_id
@@ -182,14 +183,34 @@ class Dashboard(db.Model, SerializerMixin):
 
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    name = db.Column(db.String, nullable=False, default='')
 
-    def __init__(self, user_id, name):
+    name = db.Column(db.String, nullable=False, default='')
+    type = db.Column(db.String, nullable=False, default='')  # Add a field to store type
+    duration = db.Column(db.Integer, nullable=False, default=0)  # Add a field to store duration
+    notes = db.Column(db.String, nullable=False, default='')  # Add a field to store notes
+
+    user = db.relationship('User', backref='dashboards')  # Updated backref relationship
+
+    def __init__(self, user_id, name, type, duration, notes):
         self.user_id = user_id
         self.name = name
+        self.type = type
+        self.duration = duration
+        self.notes = notes
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'user_id': self.user_id,
+            'name': self.name,
+            'type': self.type,
+            'duration': self.duration,
+            'notes': self.notes
+        }
 
     def __repr__(self):
         return f"<Dashboard id={self.id} name={self.name}>"
+
 
 
 class Exercise(db.Model, SerializerMixin):
