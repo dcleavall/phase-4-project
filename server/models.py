@@ -185,11 +185,13 @@ class Dashboard(db.Model, SerializerMixin):
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
     name = db.Column(db.String, nullable=False, default='')
-    type = db.Column(db.String, nullable=False, default='')  # Add a field to store type
-    duration = db.Column(db.Integer, nullable=False, default=0)  # Add a field to store duration
-    notes = db.Column(db.String, nullable=False, default='')  # Add a field to store notes
+    type = db.Column(db.String, nullable=False, default='')
+    duration = db.Column(db.Integer, nullable=False, default=0)
+    notes = db.Column(db.String, nullable=False, default='')
+    likes = db.Column(db.Integer, nullable=False, default=0)  # New column for tracking likes
+    comments = db.Column(db.String, nullable=False, default='')  # New column for storing comments
 
-    user = db.relationship('User', backref='dashboards')  # Updated backref relationship
+    user = db.relationship('User', backref='dashboards')
 
     def __init__(self, user_id, name, type, duration, notes):
         self.user_id = user_id
@@ -205,7 +207,9 @@ class Dashboard(db.Model, SerializerMixin):
             'name': self.name,
             'type': self.type,
             'duration': self.duration,
-            'notes': self.notes
+            'notes': self.notes,
+            'likes': self.likes,  # Include the likes in the serialization
+            'comments': self.comments  # Include the comments in the serialization
         }
 
     def __repr__(self):

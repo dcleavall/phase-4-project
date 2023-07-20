@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import Exercise from './Exercise';
 import Nutrition from './Nutrition';
@@ -6,12 +6,14 @@ import Mindfulness from './Mindfulness';
 import Dashboard from './Dashboard';
 import { useDrop } from 'react-dnd';
 import { ItemTypes } from './ItemTypes';
+import { AuthContext } from './UserContext';
 
 const Home = () => {
   const [showExercise, setShowExercise] = useState(false);
   const [showNutrition, setShowNutrition] = useState(false);
   const [showMindfulness, setShowMindfulness] = useState(false);
   const [droppedMindfulness, setDroppedMindfulness] = useState(null);
+  const { handleLogout } = useContext(AuthContext); 
 
   const handleToggleMindfulness = () => {
     setShowMindfulness(!showMindfulness);
@@ -51,9 +53,12 @@ const Home = () => {
     <div className="home">
       <nav className="flex justify-between items-center bg-gray-800 p-6">
         <div>
-          <Link to="/" className="text-xl font-bold text-white">
-            Logo
-          </Link>
+          <button
+          onClick={handleLogout}
+          className="flex items-center text-white mt-4 underline mr-4"
+        >
+          Logout
+        </button>
         </div>
         <div>
           <ul className="flex space-x-4">

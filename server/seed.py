@@ -104,8 +104,8 @@ if __name__ == '__main__':
 
         # Seed the Mindfulness class
         mindfulness_data = [
-            {'user_id': 1, 'dashboard_id': 1, 'name': 'Sample Mindfulness 1', 'type': 'yoga', 'duration': 25, 'notes': 'sample notes'},
-            {'user_id': 2, 'dashboard_id': 2, 'name': 'Sample Mindfulness 2', 'type': 'meditation', 'duration': 20, 'notes': 'sample notes'},
+            {'user_id': 1, 'dashboard_id': 1, 'name': 'Sample Mindfulness 1', 'type': 'yoga', 'duration': 25, 'notes': 'Sample notes'},
+            {'user_id': 2, 'dashboard_id': 2, 'name': 'Sample Mindfulness 2', 'type': 'meditation', 'duration': 20, 'notes': 'Sample notes'},
             # Add more mindfulness data as needed
         ]
 

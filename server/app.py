@@ -509,8 +509,44 @@ class Dashboards(Resource):
             return {'message': 'Dashboard created successfully'}, 201
         except Exception as e:
             db.session.rollback()
-            return {'message': f'Error creating dashboard: {str(e)}'}, 500       
+            return {'message': f'Error creating dashboard: {str(e)}'}, 500 
 
+class DashboardID(Resource):
+    def get(self, id):
+        user_id = session.get('user_id')
+        user = User.query.filter_by(id=user_id).first()
+        dashboard = Dashboard.query.get(id)
+
+        if not dashboard:
+            return {'message': 'Dashboard not found'}, 404
+
+        if not user:
+            return {'message': 'Unauthorized'}, 401
+
+        # Assuming you have a 'to_dict()' method in the Dashboard model to serialize the data
+        data = dashboard.to_dict()
+        data['likes'] = dashboard.likes  # Include the like count in the response data
+        return data, 200
+
+    def put(self, id):
+        user_id = session.get('user_id')
+        user = User.query.filter_by(id=user_id).first()
+        dashboard = Dashboard.query.get(id)
+
+        if not dashboard:
+            return {'message': 'Dashboard not found'}, 404
+
+        if not user:
+            return {'message': 'Unauthorized'}, 401
+
+        likes_data = request.get_json()
+        if 'liked' in likes_data:
+            dashboard.likes = dashboard.likes + 1 if likes_data['liked'] else dashboard.likes - 1
+            db.session.commit()
+
+            return {'message': 'Likes updated successfully', 'likes': dashboard.likes}, 200
+        else:
+            return {'message': 'Invalid data'}, 400
 
 
 
@@ -530,6 +566,7 @@ api.add_resource(NutritionID, '/nutrition/<int:id>')
 api.add_resource(Mindfulnesss, '/mindfulness')
 api.add_resource(MindfulnessID, '/mindfulness/<int:id>')
 api.add_resource(Dashboards, '/dashboard')
+api.add_resource(DashboardID, '/dashboard/<int:id>')
 
 if __name__ == '__main__':
     app.run(port=5555, debug=True) 

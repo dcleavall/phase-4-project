@@ -5,13 +5,13 @@ import { AuthContext } from './UserContext';
 import { useHistory } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faThumbsUp } from '@fortawesome/free-solid-svg-icons';
-import { EmojiHappyIcon } from "@heroicons/react/outline";
 
 
 const Dashboard = () => {
   const [droppedMindfulness, setDroppedMindfulness] = useState({});
   const [commentText, setCommentText] = useState('');
   const [liked, setLiked] = useState(false);
+  const [likeCount, setLikeCount] = useState(0);
   const { user } = useContext(AuthContext);
   const history = useHistory();
 
@@ -114,10 +114,42 @@ const Dashboard = () => {
     setCommentText('');
   };
 
-  const handleLike = () => {
-    // You can implement the logic for liking the post here
-    setLiked(!liked);
-    console.log('Liked the post!');
+  const handleLike = (e) => {
+    e.preventDefault();
+    if (!user) {
+      console.error('User is not authenticated. Cannot like the post.');
+      return;
+    }
+
+    // Make an API call to update the likes on the backend
+    fetch(`/dashboard/${droppedMindfulness.id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        liked: !liked, // Send the opposite of the current 'liked' state
+      }),
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('Failed to update likes on the backend');
+        }
+        return response.json();
+      })
+      .then((data) => {
+        console.log('Likes updated on the backend:', data);
+
+        // Update the liked state directly without using preventDefault or form submission
+        setLiked(!liked);
+        localStorage.setItem('liked', (!liked).toString()); // Store the liked state as a string in local storage
+
+        // Update the like count based on the response from the backend
+        setLikeCount(data.likeCount);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
   };
 
   return (
@@ -137,29 +169,17 @@ const Dashboard = () => {
               <p>Type: {droppedMindfulness.type}</p>
               <p>Duration: {droppedMindfulness.duration}</p>
               <p>Notes: {droppedMindfulness.notes}</p>
-
-              {/* Like Button */}
-              <div className="px-4 flex justify-between">
-                <button
-                  onClick={handleLike}
-                  className={`h-4 ${liked ? 'text-red-500' : 'text-gray-500'}`}
-                >
-                  <FontAwesomeIcon icon={faThumbsUp} />
-                </button>
-              </div>
-              <div className="px-4 truncate flex justify-between">
-                <button
-                  onClick={handleLike}
-                  className={`h-4 ${liked ? 'text-red-500' : 'text-gray-500'}`}
-                >
-                  <FontAwesomeIcon icon={faThumbsUp} />
-                </button>
-              </div>
-              <hr />
-
-              {/* Comment Textbox */}
+              
               <form className="flex items-center p-4">
-                <EmojiHappyIcon className="h-7 mr-2" />
+                <div className="px-4 flex justify-between">
+                  <button
+                    onClick={handleLike}
+                    className={`h-4 ${liked ? 'text-blue-500' : 'text-black-500'}`}
+                  >
+                    <FontAwesomeIcon icon={faThumbsUp} />
+                  </button>
+                  <span className="text-sm ml-2">{likeCount}</span>
+                </div>
                 <input
                   type="text"
                   className="border-none flex-1 focus:ring-0 outline-none"
