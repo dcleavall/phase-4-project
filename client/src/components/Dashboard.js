@@ -160,7 +160,7 @@ const Dashboard = () => {
         <>
           <h1 className="text-3xl font-bold mb-4 text-center">Community Thread</h1>
           <div ref={drop} className="container mt-5 mb-5" style={{ ...dropzoneStyle }}>
-            <p>Drop mindfulness here</p>
+            <p>Drop health item</p>
           </div>
           {droppedMindfulness && (
             <div className="mt-4">

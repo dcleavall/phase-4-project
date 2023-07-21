@@ -35,7 +35,8 @@ const UserCard = () => {
     });
   };
 
-  const handleSaveChanges = () => {
+  const handleSaveChanges = (e) => {
+    e.preventDefault();
     // Call updateUser function to save the changes
     updateUser(formData);
 

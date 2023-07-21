@@ -8,6 +8,7 @@ import { useDrop } from 'react-dnd';
 import { ItemTypes } from './ItemTypes';
 import { AuthContext } from './UserContext';
 
+
 const Home = () => {
   const [showExercise, setShowExercise] = useState(false);
   const [showNutrition, setShowNutrition] = useState(false);
@@ -50,89 +51,90 @@ const Home = () => {
   };
 
   return (
-    <div className="home">
-      <nav className="flex justify-between items-center bg-gray-800 p-6">
-        <div>
-          <button
-          onClick={handleLogout}
-          className="flex items-center text-white mt-4 underline mr-4"
-        >
-          Logout
-        </button>
-        </div>
-        <div>
-          <ul className="flex space-x-4">
+  
+      <div className="home">
+        <nav className="flex justify-between items-center bg-gray-800 p-6">
           <div>
-                <Link to="/calendar" className="text-white hover:text-gray-300">
-                  Calendar
-                </Link>
-              </div>
-            <li>
-              <Link to="/noteboard" className="text-white hover:text-gray-300">
-                To Do List
-              </Link>
-            </li>
-            <li>
-              <Link to="/about" className="text-white hover:text-gray-300">
-                About
-              </Link>
-            </li>
-            <li>
-              <Link to="/account" className="text-white hover:text-gray-300">
-                Account
-              </Link>
-            </li>
-          </ul>
-        </div>
-      </nav>
-      <h1 className="text-3xl font-bold mb-4 text-center">Health Log</h1>
-      <div className="flex justify-center">
-        <div className="w-1/2">
-          <h2 className="text-xl font-semibold mb-4 text-center">Track your health here!</h2>
-          <div className="health-choice-buttons flex justify-center mb-4">
             <button
-              className={`rounded-lg py-2 px-4 mr-2 bg-blue-500 hover:bg-blue-600 ${
-                showExercise ? 'bg-blue-600' : ''
-              }`}
-              onClick={handleToggleExercise}
-            >
-              Exercise
-            </button>
-            <button
-              className={`rounded-lg py-2 px-4 mr-2 bg-blue-500 hover:bg-blue-600 ${
-                showNutrition ? 'bg-blue-600' : ''
-              }`}
-              onClick={handleToggleNutrition}
-            >
-              Nutrition
-            </button>
-            <button
-              className={`rounded-lg py-2 px-4 mr-2 bg-blue-500 hover:bg-blue-600 ${
-                showMindfulness ? 'bg-blue-600' : ''
-              }`}
-              onClick={handleToggleMindfulness}
-            >
-              Mindfulness
-            </button>
+            onClick={handleLogout}
+            className="flex items-center text-white mt-4 underline mr-4"
+          >
+            Logout
+          </button>
           </div>
-          {showExercise && <Exercise key="exercise" handleToggleExercise={handleToggleExercise} />}
-          {showNutrition && <Nutrition key="nutrition" handleToggleNutrition={handleToggleNutrition} />}
-          {showMindfulness && (
+          <div>
+            <ul className="flex space-x-4">
             <div>
-              <Mindfulness
-                key="mindfulness"
-                handleToggleMindfulness={handleToggleMindfulness}
-                droppedMindfulness={droppedMindfulness}
-                handleDrop={handleDrop}
-              />
+                  <Link to="/calendar" className="text-white hover:text-gray-300">
+                    Calendar
+                  </Link>
+                </div>
+              <li>
+                <Link to="/noteboard" className="text-white hover:text-gray-300">
+                  To Do List
+                </Link>
+              </li>
+              <li>
+                <Link to="/about" className="text-white hover:text-gray-300">
+                  About
+                </Link>
+              </li>
+              <li>
+                <Link to="/account" className="text-white hover:text-gray-300">
+                  Account
+                </Link>
+              </li>
+            </ul>
+          </div>
+        </nav>
+          <h1 className="text-3xl font-bold mb-4 text-center">Account-a-buddy</h1>
+          <div className="flex justify-center">
+            <div className="w-1/2">
+              <h2 className="text-xl font-semibold mb-4 text-center">Log your health</h2>
+              <div className="health-choice-buttons flex justify-center mb-4">
+                <button
+                  className={`rounded-lg py-2 px-4 mr-2 bg-blue-500 hover:bg-blue-600 ${
+                    showExercise ? 'bg-blue-600' : ''
+                  }`}
+                  onClick={handleToggleExercise}
+                >
+                  Exercise
+                </button>
+                <button
+                  className={`rounded-lg py-2 px-4 mr-2 bg-blue-500 hover:bg-blue-600 ${
+                    showNutrition ? 'bg-blue-600' : ''
+                  }`}
+                  onClick={handleToggleNutrition}
+                >
+                  Nutrition
+                </button>
+                <button
+                  className={`rounded-lg py-2 px-4 mr-2 bg-blue-500 hover:bg-blue-600 ${
+                    showMindfulness ? 'bg-blue-600' : ''
+                  }`}
+                  onClick={handleToggleMindfulness}
+                >
+                  Mindfulness
+                </button>
+              </div>
+              {showExercise && <Exercise key="exercise" handleToggleExercise={handleToggleExercise} />}
+              {showNutrition && <Nutrition key="nutrition" handleToggleNutrition={handleToggleNutrition} />}
+              {showMindfulness && (
+                <div>
+                  <Mindfulness
+                    key="mindfulness"
+                    handleToggleMindfulness={handleToggleMindfulness}
+                    droppedMindfulness={droppedMindfulness}
+                    handleDrop={handleDrop}
+                  />
+                </div>
+              )}
             </div>
-          )}
-        </div>
-        <div className="w-1/2">
-          <Dashboard droppedMindfulness={droppedMindfulness} dropzoneStyle={dropzoneStyle}  drop={drop}/>
-        </div>
+            <div className="w-1/2">
+              <Dashboard droppedMindfulness={droppedMindfulness} dropzoneStyle={dropzoneStyle}  drop={drop}/>
+            </div>
+          </div>
       </div>
-    </div>
   );
 };
 

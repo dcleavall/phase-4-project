@@ -2,6 +2,8 @@ import { useHistory } from "react-router-dom";
 import { ChevronLeftIcon } from '@heroicons/react/outline';
 import { AuthContext } from "./UserContext";
 import React, { useContext } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faLinkedin, faGithub, faMedium, faSnapchat } from "@fortawesome/free-brands-svg-icons";
 
 const About = () => {
   const history = useHistory();
@@ -35,7 +37,7 @@ const About = () => {
       <div className="card mt-10">
         <h1 className="text-center">Meet the team</h1>
         <div className="container py-5 flex bg-gray-900 justify-center items-center flex-col">
-          <div className="w-full lg:w-7/12 bg-gray-900 rounded-t text-white flex flex-col items-center shadow-lg">
+          <div className="w-full lg:w-11/12 bg-gray-900 rounded-t text-white flex flex-col items-center shadow-lg">
             <div className="mt-5">
               <img
                 src="/zbearImage.jpg"
@@ -51,6 +53,20 @@ const About = () => {
                 <p className="italic text-gray-400 mb-2">Cultivator | Software Engineer</p>
                 <p className="italic text-gray-400 mb-2">Lives in Denver</p>
                 <p className="italic text-gray-400">Thanks for stopping by 🤙🏼</p>
+              </div>
+              <div className="media">
+                <a href="https://www.linkedin.com/in/derrick-c-19659211a/" target="_blank" rel="noopener noreferrer" className="linkedin-icon text-gray-400 hover:text-blue-500 transform transition-transform">
+                  <FontAwesomeIcon icon={faLinkedin} size="2x" />
+                </a>
+                <a href="https://github.com/dcleavall" target="_blank" rel="noopener noreferrer" className="github-icon text-gray-400 hover:text-blue-500 transform transition-transform">
+                  <FontAwesomeIcon icon={faGithub} size="2x" />
+                </a>
+                <a href="https://medium.com/@dcleavall" target="_blank" rel="noopener noreferrer" className="medium-icon text-gray-400 hover:text-blue-500 transform transition-transform">
+                  <FontAwesomeIcon icon={faMedium} size="2x" />
+                </a>
+                <a href="https://snapchat.com" target="_blank" rel="noopener noreferrer" className="snapchat-icon text-gray-400 hover:text-blue-500 transform transition-transform">
+                  <FontAwesomeIcon icon={faSnapchat} size="2x" />
+                </a>
               </div>
             </div>
           </div>
