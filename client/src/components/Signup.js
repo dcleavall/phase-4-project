@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { Link, useHistory } from 'react-router-dom';
+import {AuthContext} from './UserContext'
 
 const SignupSchema = Yup.object().shape({
   username: Yup.string().required('Username is required'),
@@ -12,34 +13,13 @@ const SignupSchema = Yup.object().shape({
 });
 
 function Signup() {
-  const [user, setUser] = useState(null);
+  const {createUser} = useContext(AuthContext);
   const [error, setError] = useState(null);
   const history = useHistory();
 
   const handleSubmit = (values) => {
-    fetch('/signup', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(values),
-    })
-      .then((response) => {
-        if (response.status === 409) {
-          throw new Error('Email already exists. Please choose a different email.');
-        } else if (response.ok) {
-          return response.json();
-        } else {
-          throw new Error('Sign up failed');
-        }
-      })
-      .then((data) => {
-        setUser(data);
-        setError(null);
-        history.push('/login'); // Redirect to the login page after successful signup
-      })
+    createUser(values)
       .catch((error) => {
-        setUser(null);
         setError(error.message);
         console.error('Error:', error);
       });
@@ -64,7 +44,6 @@ function Signup() {
           
         </h2>
         {error && <p className="mt-4 text-center text-red-600">Error: {error}</p>}
-        {user && <p className="mt-4 text-center">User: {JSON.stringify(user)}</p>}
       </div>
 
       <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
@@ -149,7 +128,7 @@ function Signup() {
             </div>
           </div>
 
-          {user === null && !formik.isSubmitting && (
+          {!formik.isSubmitting && (
             <button type="submit" className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
               Submit
             </button>
@@ -157,11 +136,11 @@ function Signup() {
         </form>
 
         <div className="mt-4 text-center">
-          {user === null && (
+           (
             <Link to="/login" className="font-medium text-indigo-600 hover:text-indigo-500">
               Return to Login
             </Link>
-          )}
+          )
         </div>
       </div>
     </div>

@@ -52,7 +52,7 @@ const UserProvider = ({ children }) => {
       .then((data) => {
         console.log(data);
        
-        setUser(data);
+        setUser(data.user);
         history.push("/");
       })
       .catch((error) => {
@@ -124,6 +124,27 @@ const UserProvider = ({ children }) => {
       });
   };
   
+  const createUser = (values) => {
+    return fetch('/signup', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(values),
+    })
+      .then((response) => {
+        if (response.status === 409) {
+          throw new Error('Email already exists. Please choose a different email.');
+        } else if (response.ok) {
+          return response.json();
+        } else {
+          throw new Error('Sign up failed');
+        }
+      })
+      .then((data) => {
+        setUser(data);
+      })
+  }
 
 
 
@@ -134,7 +155,8 @@ const UserProvider = ({ children }) => {
         handleLogin,
         handleLogout,
         deleteUser,
-        updateUser
+        updateUser,
+        createUser
       }}
     >
       {children}

@@ -14,6 +14,7 @@ const Dashboard = () => {
   const [likeCount, setLikeCount] = useState(0);
   const { user } = useContext(AuthContext);
   const history = useHistory();
+  
 
   const handleDrop = (item) => {
     if (!user) {
@@ -31,7 +32,8 @@ const Dashboard = () => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        user_id: user.id, // Pass the user ID to the backend
+        user_id: user.id,
+        username: user.username, // Use the logged-in user's username
         name: mindfulness.name, // Use the mindfulness name as the dashboard name
         type: mindfulness.type, // Add the mindfulness type
         duration: mindfulness.duration, // Add the mindfulness duration
@@ -46,17 +48,20 @@ const Dashboard = () => {
       })
       .then((data) => {
         console.log('Dashboard entry added to the backend:', data);
-        // You can update the state or perform any additional actions if needed.
-        // For example, you might want to update the list of dashboards displayed in the frontend.
+
+        // Update the state with the dropped mindfulness and include the username
+        const droppedMindfulnessWithUsername = {
+          ...mindfulness,
+          username: user.username,
+        };
+        setDroppedMindfulness(droppedMindfulnessWithUsername);
+
+        // Save the dropped mindfulness to localStorage
+        saveDroppedMindfulnessToLocalStorage(droppedMindfulnessWithUsername);
       })
       .catch((error) => {
         console.error(error);
       });
-
-    // Update the state with the dropped mindfulness
-    setDroppedMindfulness(mindfulness);
-    // Save the dropped mindfulness to localStorage
-    saveDroppedMindfulnessToLocalStorage(mindfulness);
   };
 
   // Helper function to save dropped mindfulness to localStorage
@@ -164,7 +169,7 @@ const Dashboard = () => {
           </div>
           {droppedMindfulness && (
             <div className="mt-4">
-              <h2>Dropped Mindfulness:</h2>
+              <h2>{droppedMindfulness.username}, posted:</h2>
               <p>Name: {droppedMindfulness.name}</p>
               <p>Type: {droppedMindfulness.type}</p>
               <p>Duration: {droppedMindfulness.duration}</p>

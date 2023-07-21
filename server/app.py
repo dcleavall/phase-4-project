@@ -43,7 +43,7 @@ class Signup(Resource):
         except Exception as e:
             db.session.rollback()
             abort(500, f"Failed to create user: {str(e)}")
-
+        session['user_id'] = new_user.id
         response = make_response(new_user.to_dict(), 201)
         return response
 
@@ -158,8 +158,8 @@ class PatchUser(Resource):
 
                 user.username = user_data.get('username', user.username)
                 user.email = user_data.get('email', user.email)
-                user.first_name = user_data.get('first_name', user.first_name)
-                user.last_name = user_data.get('last_name', user.last_name)
+                user.first_name = user_data.get('firstName', user.first_name)
+                user.last_name = user_data.get('lastName', user.last_name)  # Update last_name field
 
                 try:
                     db.session.commit()

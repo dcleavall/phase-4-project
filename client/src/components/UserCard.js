@@ -5,9 +5,9 @@ import { Modal, Button } from "react-bootstrap";
 
 import { AuthContext } from "./UserContext";
 
-const UserCard = () => {
+const UserCard = ({user}) => {
   const history = useHistory();
-  const { user, handleLogout, deleteUser, updateUser } = useContext(AuthContext);
+  const { handleLogout, deleteUser, updateUser } = useContext(AuthContext);
   const [showModal, setShowModal] = useState(false);
   const [formData, setFormData] = useState({
     firstName: user.first_name,
@@ -15,7 +15,7 @@ const UserCard = () => {
     username: user.username,
     email: user.email,
   });
-
+  console.log(user)
   const redirectToHomePage = () => {
     history.push("/");
   };
