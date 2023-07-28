@@ -143,6 +143,7 @@ const UserProvider = ({ children }) => {
       })
       .then((data) => {
         setUser(data);
+        history.push('/login'); // Redirect to the login page after successful signup
       })
   }
 

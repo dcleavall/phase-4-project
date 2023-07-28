@@ -3,7 +3,7 @@ import { ChevronLeftIcon } from '@heroicons/react/outline';
 import { AuthContext } from "./UserContext";
 import React, { useContext } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faLinkedin, faGithub, faMedium, faSnapchat } from "@fortawesome/free-brands-svg-icons";
+import { faLinkedin, faGithub, faMedium, faSnapchat, faDiscord } from "@fortawesome/free-brands-svg-icons";
 
 const About = () => {
   const history = useHistory();
@@ -57,15 +57,18 @@ const About = () => {
               <div className="media">
                 <a href="https://www.linkedin.com/in/derrick-c-19659211a/" target="_blank" rel="noopener noreferrer" className="linkedin-icon text-gray-400 hover:text-blue-500 transform transition-transform">
                   <FontAwesomeIcon icon={faLinkedin} size="2x" />
-                </a>
+                </a>{'       '}
                 <a href="https://github.com/dcleavall" target="_blank" rel="noopener noreferrer" className="github-icon text-gray-400 hover:text-blue-500 transform transition-transform">
                   <FontAwesomeIcon icon={faGithub} size="2x" />
-                </a>
+                </a>{'       '}
                 <a href="https://medium.com/@dcleavall" target="_blank" rel="noopener noreferrer" className="medium-icon text-gray-400 hover:text-blue-500 transform transition-transform">
                   <FontAwesomeIcon icon={faMedium} size="2x" />
-                </a>
+                </a>{'       '}
                 <a href="https://snapchat.com" target="_blank" rel="noopener noreferrer" className="snapchat-icon text-gray-400 hover:text-blue-500 transform transition-transform">
                   <FontAwesomeIcon icon={faSnapchat} size="2x" />
+                </a>{'       '}
+                <a href="https://discord.com" target="_blank" rel="noopener noreferrer" className="discord-icon text-gray-400 hover:text-blue-500 transform transition-transform">
+                  <FontAwesomeIcon icon={faDiscord} size="2x" />
                 </a>
               </div>
             </div>

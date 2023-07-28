@@ -82,18 +82,6 @@ class User(db.Model, SerializerMixin):
     def authenticate(self, password):
         return bcrypt.check_password_hash(self.password_hash, password)
 
-    # def __init__(self, username=None, email=None, password=None, first_name=None, last_name=None):
-    #     if username:
-    #         self.username = username
-    #     if email:
-    #         self.email = email
-    #     if password:
-    #         self._password_hash = password
-    #     if first_name:
-    #         self.first_name = first_name
-    #     if last_name:
-    #         self.last_name = last_name
-
 
     def __repr__(self):
         return f"<User {self.username}>"
@@ -115,28 +103,6 @@ class Nutrition(db.Model, SerializerMixin):
 
     user = db.relationship('User', backref='nutritions')  # Updated backref relationship
 
-    # def __init__(self, user_id, name, meal, protein, fat, carbs, macros, goals):
-    #     self.user_id = user_id
-    #     self.name = name
-    #     self.meal = meal
-    #     self.protein = protein
-    #     self.fat = fat
-    #     self.carbs = carbs
-    #     self.macros = macros
-    #     self.goals = goals
-
-    # def to_dict(self):
-    #     return {
-    #         'id': self.id,
-    #         'name': self.name,
-    #         'user_id': self.user_id,
-    #         'meal': self.meal,
-    #         'protein': self.protein,
-    #         'fat': self.fat,
-    #         'carbs': self.carbs,
-    #         'macros': self.macros,
-    #         'goals': self.goals
-    #     }
 
     def __repr__(self):
         return f"<Nutrition id={self.id} name={self.name}>"
