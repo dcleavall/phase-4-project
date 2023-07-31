@@ -87,7 +87,7 @@ const Home = () => {
             </ul>
           </div>
         </nav>
-          <h1 className="text-3xl font-bold mb-4 text-center">Account-a-buddy</h1>
+          <h1 className="text-3xl font-bold mb-4 text-center">Account-a-billy-buddy</h1>
           <div className="flex justify-center">
             <div className="w-1/2">
               <h2 className="text-xl font-semibold mb-4 text-center">Log your health</h2>
