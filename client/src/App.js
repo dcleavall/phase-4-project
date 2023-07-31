@@ -19,13 +19,11 @@ import Exercise from "./components/Exercise";
 import Nutrition from "./components/Nutrition";
 import Mindfulness from "./components/Mindfulness";
 import CustomCalendar from "./components/calendar/Calendar";
-import Particles from "./components/ParticlesComponent"
 
 function Unauthorized() {
   const history = useHistory();
   const {handleLogin} = useContext(AuthContext);
   return <Router>
-  <Particles id="tsparticles" />
   <div className="container">
     <DndProvider backend={HTML5Backend}>  
       <Switch>
